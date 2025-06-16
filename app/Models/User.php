@@ -60,8 +60,14 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    public function roles()
+    public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    // determine user role name
+    public function hasRole($role) : string
+    {
+        return $this->role->name === $role;
     }
 }

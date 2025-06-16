@@ -32,7 +32,7 @@ class Login extends Component
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -43,7 +43,28 @@ class Login extends Component
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectUserToDashboard();
+    }
+
+    protected function redirectUserToDashboard()
+    {
+        // Obtenemos el usuario logueado
+        $user = Auth::user();
+
+        // Redireccionamos según el rol
+        if ($user->hasRole('admin')) {
+            $this->redirectRoute('admin.dashboard', navigate: true);
+        } elseif ($user->hasRole('vendedor')) {
+            $this->redirectRoute('vendedor.dashboard', navigate: true);
+        } else {
+            Auth::logout();
+            Session::invalidate();
+            Session::regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => 'Tu cuenta no tiene un rol autorizado.',
+            ]);
+        }
     }
 
     /**
@@ -51,7 +72,7 @@ class Login extends Component
      */
     protected function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -72,6 +93,6 @@ class Login extends Component
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+        return Str::transliterate(Str::lower($this->email) . '|' . request()->ip());
     }
 }
