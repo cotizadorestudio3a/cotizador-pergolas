@@ -4,7 +4,7 @@
     @include('partials.head')
 </head>
 <body class="min-h-screen bg-white dark:bg-zinc-800">
-<flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<flux:sidebar sticky stashable class="border-e bg-white dark:border-zinc-700 dark:bg-zinc-900">
     <flux:sidebar.toggle class="lg:hidden" icon="x-mark"/>
 
     <a href="#" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
@@ -12,11 +12,11 @@
     </a>
 
     <flux:navlist variant="outline">
-        <flux:navlist.group :heading="__('Platform')" class="grid">
+        <flux:navlist.group :heading="__('Plataforma')" class="grid">
             <flux:navlist.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('admin.dashboard')"
                                wire:navigate>{{ __('Panel principal') }}
             </flux:navlist.item>
-            <flux:navlist.item icon="add-user" :href="route('admin.dashboard')" :current="request()->routeIs('dashboard')"
+            <flux:navlist.item icon="add-user" :href="route('admin.vendors.index')" :current="request()->routeIs('admin.vendors.index')"
                                wire:navigate>{{ __('Agregar vendedor') }}
             </flux:navlist.item>
             <flux:navlist.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('dashboard')"
