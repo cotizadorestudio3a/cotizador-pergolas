@@ -1,31 +1,13 @@
 <div>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-        <h1 class="font-semibold text-2xl">Vendedores</h1>
-        <p class="text-gray-500">Gestiona los vendedores desde aqui.</p>
+        <h1 class="font-semibold text-2xl">Asignar Clientes</h1>
+        <p class="text-gray-500">Gestiona los clientes de los vendedores desde aqui.</p>
 
         <div class="mb-4 mt-8">
-            <flux:modal.trigger name="create">
+            <a href="{{ route('admin.vendors.index') }}">
                 <flux:button variant="primary">Crear nuevo vendedor</flux:button>
-            </flux:modal.trigger>
-
-            <flux:modal name="create" class="md:w-96" variant="flyout">
-                <form wire:submit="save" class="space-y-6"> {{-- Aquí va el evento Livewire --}}
-                    <div>
-                        <flux:heading size="lg">Crear vendedor</flux:heading>
-                        <flux:text class="mt-2">Ingresa los datos del vendedor.</flux:text>
-                    </div>
-
-                    <flux:input label="Nombre" wire:model="name" placeholder="Ej. Juan Pérez"/>
-                    <flux:input label="Correo" wire:model="email" type="email" placeholder="correo@ejemplo.com"/>
-
-                    <div class="flex">
-                        <flux:spacer/>
-                        <flux:button type="submit" variant="primary">Registrar vendedor</flux:button>
-                    </div>
-                </form>
-            </flux:modal>
-
+            </a>
         </div>
 
         @if(session('success'))
@@ -97,11 +79,6 @@
 
                     <th class="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
                         <p class="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                            Estado
-                        </p>
-                    </th>
-                    <th class="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
-                        <p class="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                             Registrado
                         </p>
                     </th>
@@ -142,47 +119,22 @@
                         </td>
 
                         <td class="p-4 border-b border-blue-gray-50">
-                            <!--
-
-                            -->
-
-                        </td>
-                        <td class="p-4 border-b border-blue-gray-50">
                             <p class="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
                                 {{ $user->created_at->diffForHumans() }}
                             </p>
                         </td>
                         <td class="p-4 border-b border-blue-gray-50">
-                            <flux:modal.trigger :name="'delete-vendor-'.$user->id">
-                                <flux:button variant="danger">Eliminar</flux:button>
-                            </flux:modal.trigger>
 
-                            <flux:modal :name="'delete-vendor-'.$user->id" class="min-w-[22rem]">
+                            <div class="space-y-6">
 
-                                <input type="hidden" value="$user->id" wire:model="id">
-                                <div class="space-y-6">
-                                    <div>
-                                        <flux:heading size="lg">Quieres eliminar este vendedor?</flux:heading>
-
-                                        <flux:text class="mt-2">
-                                            <p>Estas a punto de eliminar este usuario.</p>
-                                            <p>Esta accion no se puede deshacer.</p>
-                                        </flux:text>
-                                    </div>
-
-                                    <div class="flex gap-2">
-                                        <flux:spacer/>
-
-                                        <flux:modal.close>
-                                            <flux:button variant="ghost">Cancelar</flux:button>
-                                        </flux:modal.close>
-
-                                        <flux:button type="submit" variant="danger"
-                                                     wire:click="delete({{ $user->id }})">Sí, eliminar vendedor
+                                <div class="flex gap-2">
+                                    <a href="{{ route('admin.assign.create', $user) }}">
+                                        <flux:button type="button" variant="primary">
+                                            Asignar Clientes
                                         </flux:button>
-                                    </div>
+                                    </a>
                                 </div>
-                            </flux:modal>
+                            </div>
                         </td>
                     </tr>
                 @empty

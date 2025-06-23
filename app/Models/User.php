@@ -64,6 +64,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+    public function clients()
+    {
+        return $this->belongsToMany(Client::class, 'client_user', 'user_id', 'client_id');
+    }
 
     // determine user role name
     public function hasRole($role) : string
