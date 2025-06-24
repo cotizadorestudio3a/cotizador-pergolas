@@ -16,11 +16,11 @@ class Create extends Component
 
     public string $password = '';
 
-    public function register()
+    public function save()
     {
         $validated = $this->validate( [
-           'name' => ['required', 'string', 'max:255'],
-           'email' => ['required', 'string', 'max:255', 'lowercase', 'email', 'unique:'.User::class],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'max:255', 'lowercase', 'email', 'unique:'.User::class],
         ]);
 
         $validated['password'] = Hash::make('hola12345');
@@ -28,10 +28,11 @@ class Create extends Component
 
         event(new Registered(($user = User::create($validated))));
 
-        return redirect()->route('admin.vendors.index')->with('success', 'Se creó el vendedor ' . $user->name );
-    }
-    public function render()
-    {
-        return view('livewire.admin.vendors.create');
+        $this->modal('create')->close();
+        
+        //reset inputs in modal
+        $this->reset('name', 'email');
+
+        $this->dispatch('vendor-created', name: $user->name );
     }
 }

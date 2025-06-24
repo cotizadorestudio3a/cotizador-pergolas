@@ -13,6 +13,6 @@ class Index extends Component
 
         $users = User::where('role_id', UserRole::Vendedor->value)->orderBy('created_at', 'desc')->paginate(10);
 
-        return view('livewire.admin.vendor-clients.index', compact('users'));
+        return view('livewire.admin.vendor-clients.index', compact('users'))->title('Asignar Clientes');
     }
 }

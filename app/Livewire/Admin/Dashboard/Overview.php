@@ -16,6 +16,6 @@ class Overview extends Component
         [
             "vendorsCount" => $vendorsCount,
             "users" => $users
-        ]);
+        ])->title('Panel de control');
     }
 }

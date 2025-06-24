@@ -30,9 +30,9 @@
                     <flux:button variant="primary" type="submit" class="w-full">{{ __('Cambiar contraseña') }}</flux:button>
                 </div>
 
-                <x-action-message class="me-3" on="password-updated">
+                <x-success-info-message class="me-3" on="password-updated">
                     {{ __('Se actulizó tu contraseña.') }}
-                </x-action-message>
+                </x-success-info-message>
             </div>
         </form>
     </x-settings.layout>

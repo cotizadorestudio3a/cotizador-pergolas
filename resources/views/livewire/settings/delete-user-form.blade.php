@@ -13,7 +13,7 @@
     <flux:modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable class="max-w-lg">
         <form wire:submit="deleteUser" class="space-y-6">
             <div>
-                <flux:heading size="lg">{{ __('Are you sure you want to delete your account?') }}</flux:heading>
+                <flux:heading size="lg">{{ __('Estas seguro que quieres elimianar tu cuenta?') }}</flux:heading>
 
                 <flux:subheading>
                     {{ __('Una vez que se elimine su cuenta, todos sus recuersos e información seran eliminado permanentemente. Por favor ingrese su contraseña para confirmar que deseas eliminar tu cuenta permanentemente.') }}

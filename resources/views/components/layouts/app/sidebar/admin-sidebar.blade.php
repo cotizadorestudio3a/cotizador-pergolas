@@ -3,7 +3,7 @@
 <head>
     @include('partials.head')
 </head>
-<body class="min-h-screen bg-white dark:bg-zinc-800">
+<body class="min-h-screen bg-[#FAFBFF] dark:bg-zinc-800">
 <flux:sidebar sticky stashable class="border-e bg-white dark:border-zinc-700 dark:bg-zinc-900">
     <flux:sidebar.toggle class="lg:hidden" icon="x-mark"/>
 
@@ -123,7 +123,7 @@
 
             <flux:menu.radio.group>
                 <flux:menu.item :href="route('settings.profile')" icon="cog"
-                                wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                                wire:navigate>{{ __('Configuración') }}</flux:menu.item>
             </flux:menu.radio.group>
 
             <flux:menu.separator/>
@@ -131,7 +131,7 @@
             <form method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
                 <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                    {{ __('Log Out') }}
+                    {{ __('Cerrar sesión') }}
                 </flux:menu.item>
             </form>
         </flux:menu>
