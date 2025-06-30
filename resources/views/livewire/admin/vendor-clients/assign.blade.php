@@ -142,24 +142,24 @@
 
                 <div class="flex items-center gap-3">
                     @if(count($selectedClients) > 0)
-                        <button
+                        <flux:button
                             type="button"
                             wire:click="$set('selectedClients', [])"
                             class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200"
                         >
                             Limpiar selección
-                        </button>
+                        </flux:button>
                     @endif
                     
-                    <button
+                    <flux:button
                         type="submit"
-                        class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
+                        variant="primary"
+                        >
                         <span wire:loading.remove class="flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            Guardar Asignación
+                            Guardar
                         </span>
                         <span wire:loading class="flex items-center gap-2">
                             <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -168,7 +168,7 @@
                             </svg>
                             Guardando...
                         </span>
-                    </button>
+                    </flux:button>
                 </div>
             </div>
         </div>
