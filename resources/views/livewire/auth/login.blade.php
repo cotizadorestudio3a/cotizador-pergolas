@@ -41,6 +41,7 @@
             autofocus
             autocomplete="email"
             placeholder="email@ejemplo.com"
+            value="{{ $email ?? old('email') }}"
         />
 
         <!-- Password -->

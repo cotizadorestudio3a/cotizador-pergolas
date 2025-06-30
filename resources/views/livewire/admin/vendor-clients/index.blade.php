@@ -1,8 +1,10 @@
 <div>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-        <h1 class="font-semibold text-2xl">Asignar Clientes</h1>
-        <p class="text-gray-500">Gestiona los clientes de los vendedores desde aqui.</p>
+        <div class="bg-white p-8 rounded-3xl">
+            <h1 class="font-semibold text-2xl">Asignar Clientes</h1>
+            <p class="text-gray-500">Gestiona los clientes de los vendedores desde aqui.</p>
+        </div>
 
         <div class="mb-4 mt-8">
             <a href="{{ route('admin.vendors.index') }}">
@@ -47,7 +49,7 @@
         @endif
     </div>
 
-    <div class="relative mt-8 flex flex-col w-full h-auto text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
+    <div class="relative mt-8 flex flex-col w-full h-auto text-gray-700 bg-white rounded-2xl bg-clip-border">
         <div class="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white rounded-none bg-clip-border">
             <div class="flex flex-col justify-between gap-8 mb-4 md:flex-row md:items-center">
                 <div class="mt-4">
@@ -90,15 +92,6 @@
                 </thead>
                 <tbody>
 
-                @if(false)
-                    <div class="bg-white rounded-lg overflow-hidden">
-                        <div class="p-4 text-center">
-                            <h3 class="text-lg font-semibold text-gray-900">No hay vendedores registrados</h3>
-                            <p class="text-sm text-gray-600">Agrega nuevos vendedores en el sistema.</p>
-                        </div>
-                    </div>
-                @endif
-
                 @forelse($users as $user)
                     <tr>
                         <td class="p-4 border-b border-blue-gray-50">
@@ -138,6 +131,12 @@
                         </td>
                     </tr>
                 @empty
+                   <div class="bg-white rounded-lg overflow-hidden">
+                        <div class="p-4 text-center">
+                            <h3 class="text-lg font-semibold text-gray-900">No hay vendedores registrados</h3>
+                            <p class="text-sm text-gray-600">Agrega nuevos vendedores en el sistema.</p>
+                        </div>
+                    </div>
                 @endforelse
 
                 </tbody>

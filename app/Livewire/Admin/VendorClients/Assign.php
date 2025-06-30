@@ -7,13 +7,17 @@ use App\Models\User;
 use App\UserRole;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Validate;
 
 class Assign extends Component
 {
     use WithPagination;
 
     public User $vendedor;
+
+    #[Validate('required')]
     public array $selectedClients = [];
+
     public $query = '';
 
     public function mount(User $vendedor)
@@ -24,10 +28,12 @@ class Assign extends Component
 
     public function save()
     {
-        $this->vendedor->clients()->sync($this->selectedClients);
-
-        session()->flash('success', 'Clientes asignados correctamente.');
-        return redirect()->route('admin.assign.index');
+        try {
+            $this->vendedor->clients()->sync($this->selectedClients);
+            $this->dispatch('vendor-clients-assigned');
+        } catch (\Exception $e) {
+            $this->dispatch('vendor-clients-assigned-error', ['error' => $e->getMessage()]);
+        }
     }
 
     public function removeClient($clientId)
