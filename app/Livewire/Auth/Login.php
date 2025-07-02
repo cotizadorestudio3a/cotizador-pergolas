@@ -61,7 +61,7 @@ class Login extends Component
         if ($user->hasRole('admin')) {
             $this->redirectRoute('admin.dashboard', navigate: true);
         } elseif ($user->hasRole('vendedor')) {
-            $this->redirectRoute('vendedor.dashboard', navigate: true);
+            $this->redirectRoute('vendor.dashboard', navigate: true);
         } else {
             Auth::logout();
             Session::invalidate();

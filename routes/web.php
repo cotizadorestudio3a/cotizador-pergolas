@@ -31,7 +31,6 @@ Route::middleware(['admin-role'])->prefix('admin')->name('admin.')->group(functi
 
     // Dashboard
     Route::get('/', Overview::class)->name('dashboard');
-    Route::get('/dashboard', Overview::class)->name('dashboard.redirect'); // opcional
 
     // Vendedores (CRUD)
     Route::prefix('vendors')->name('vendors.')->group(function () {
@@ -43,9 +42,23 @@ Route::middleware(['admin-role'])->prefix('admin')->name('admin.')->group(functi
         Route::get('/', \App\Livewire\Admin\VendorClients\Index::class)->name('index');
         Route::get('/vendedores/{vendedor}/asignar-clientes', Assign::class)->name('create');
     });
+});
 
+Route::middleware(['vendor-role'])->prefix('vendor')->name('vendor.')->group(function () {
+    Route::get('/dashboard', \App\Livewire\Vendor\Dashboard\Overview::class)->name('dashboard');
 
-    // Aquí puedes agregar más módulos como productos, cotizaciones, etc.
+    // Clientes (CRUD)
+    Route::prefix('clients')->name('clients.')->group(function () {
+        Route::get('/', \App\Livewire\Vendor\Clients\Index::class)->name('index');
+        Route::get('/create', Create::class)->name('create');
+    });
+
+    // Quotes
+    Route::prefix('quotes')->name('quotes.')->group( function() {
+        Route::get('/', \App\Livewire\Vendor\Quotes\Index::class)->name('index');
+        //Route::get('/create', Create::class)->name('create');
+    });
+
 });
 
 require __DIR__ . '/auth.php';

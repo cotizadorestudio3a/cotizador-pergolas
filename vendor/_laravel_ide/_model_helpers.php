@@ -8,7 +8,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property int $phone
-     * @property string $city
+     * @property string $province
      * @property int $dni
      * @property string $name
      * @property int $id
@@ -17,7 +17,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Client>|Client whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Client>|Client whereName($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Client>|Client whereDni($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Client>|Client whereCity($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Client>|Client whereProvince($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Client>|Client wherePhone($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Client>|Client whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Client>|Client whereUpdatedAt($value)

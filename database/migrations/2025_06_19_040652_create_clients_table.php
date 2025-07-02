@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('dni')->unique();
-            $table->string('city');
+            $table->string('province');
             $table->integer('phone')->unique();
             $table->timestamps();
         });

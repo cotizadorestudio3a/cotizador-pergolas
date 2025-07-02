@@ -73,7 +73,7 @@ class Assign extends Component
     {
         return view('livewire.admin.vendor-clients.assign',  [
             'clientesAsignados' => $this->clientesAsignados,
-            'clientesDisponibles' => Client::where('name', 'like', '%'.$this->query.'%')->paginate(10),
+            'clientesDisponibles' => Client::where('name', 'like', '%'.$this->query.'%')->paginate(50),
         ])->title('Asignar clientes');
     }
 
