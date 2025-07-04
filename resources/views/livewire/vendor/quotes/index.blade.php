@@ -6,68 +6,63 @@
             <p class="text-gray-500">Ingresa los datos de la cotización.</p>
         </div>
 
-       @php
-    $servicios = [
-        [
-            'nombre' => 'Pérgola con corintia',
-            'imagen' => 'corintia.jpg',
-            'colores' => ['Negro', 'Azul'],
-        ],
-        [
-            'nombre' => 'Pérgola chapero',
-            'imagen' => 'chapero.jpg',
-            'colores' => [],
-        ],
-        [
-            'nombre' => 'Pérgola corrediza',
-            'imagen' => 'corrediza.jpg',
-            'colores' => [],
-        ],
-    ];
-@endphp
+        <div class="px-6 py-10 bg-white mt-6 rounded-2xl">
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-1">Selecciona el servicio a cotizar</h2>
+                <p class="text-sm text-gray-500">A continuacion, sigue los pasos para realizar una cotización.</p>
+            </div>
+            @if ($step === 1)
 
-<div class="px-6 py-10">
-    <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-1">Selecciona el servicio a cotizar</h2>
-        <p class="text-sm text-gray-500">lorem ipsum lorem ipsum lorem ipsum</p>
-    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @foreach ($services as $service)
+                        <div class="rounded-2xl p-4 cursor-pointer
+               {{ $selectedService === $service->id ? 'ring-2 ring-primary' : '' }}"
+                            wire:click="$set('selectedService', {{ $service->id }})">
+                            <div class="flex items-center gap-4 mb-6">
+                                <img src="{{ asset('img/img1.webp') }}" class="w-24 h-24 rounded-full object-cover">
+                                <h3 class="text-lg font-bold">{{ $service->name }}</h3>
+                            </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        @foreach($servicios as $index => $servicio)
-            <div class="bg-white rounded-2xl shadow p-4">
-                <div class="flex items-center gap-4 cursor-pointer" wire:click="$set('servicioSeleccionado', {{ $index }})">
-                    <img src="/storage/{{ $servicio['imagen'] }}" alt="{{ $servicio['nombre'] }}" class="w-14 h-14 rounded-full object-cover">
-                    <h3 class="text-lg font-bold">{{ $servicio['nombre'] }}</h3>
-                   <flux:dropdown>
-    <flux:button icon:trailing="chevron-down">Permissions</flux:button>
-
-    <flux:menu>
-        <flux:menu.checkbox wire:model="read" checked>Read</flux:menu.checkbox>
-        <flux:menu.checkbox wire:model="write" checked>Write</flux:menu.checkbox>
-        <flux:menu.checkbox wire:model="delete">Delete</flux:menu.checkbox>
-    </flux:menu>
-</flux:dropdown>
+                            {{-- se muestran los colores solo para el servicio actualmente seleccionado --}}
+                            @if ($selectedService === $service->id)
+                                <flux:radio.group wire:model="selectedColor.{{ $service->id }}"
+                                    label="Selecciona un color…">
+                                    <flux:radio value="azul" label="Azul" />
+                                    <flux:radio value="negro" label="Negro" />
+                                    <flux:radio value="blanco" label="Blanco" />
+                                </flux:radio.group>
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
 
-                @if(count($servicio['colores']))
-                    <div class="mt-4">
-                        <p class="text-sm font-medium mb-2">Colores</p>
-                        @foreach($servicio['colores'] as $color)
-                            <label class="flex items-center space-x-2 mb-1">
-                                <input type="radio" wire:model="colorSeleccionado" value="{{ $color }}" class="text-blue-500">
-                                <span>{{ $color }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-        @endforeach
-    </div>
+                <div class="mt-10 text-right">
+                    <flux:button wire:click="irPasoSiguiente">Siguiente</flux:button>
+                </div>
+        </div>
 
-    <div class="mt-10 text-right">
-        <flux:button wire:click="irPasoSiguiente">Siguiente</flux:button>
-    </div>
-</div>
+        @endif
+
+        @if ($step === 2)
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @foreach ($variants as $variant)
+                    <div class="rounded p-4 cursor-pointer shadow
+                {{ $selectedVariant === $variant->id ? 'ring-2 ring-primary' : '' }}"
+                        wire:click="$set('selectedVariant', {{ $variant->id }})">
+                        <h3 class="text-lg font-bold">{{ $variant->service->name }}  <span class="text-sm text-gray-500">{{ $variant->name }}</span></h3>
+                        {{-- datos extra de la variante --}}
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="mt-6 text-right">
+                <flux:button wire:click="irPasoSiguiente">Continuar</flux:button>
+            </div>
+        @endif
+
+         @if ($step === 3)
+            <p>{{ $service['service_id'] }}</p>
+        @endif
 
     </div>
 </div>
