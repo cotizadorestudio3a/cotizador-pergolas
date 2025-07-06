@@ -46,11 +46,24 @@
         @if ($step === 2)
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @foreach ($variants as $variant)
-                    <div class="rounded p-4 cursor-pointer shadow
-                {{ $selectedVariant === $variant->id ? 'ring-2 ring-primary' : '' }}"
+                    <div class="rounded p-4 cursor-pointer shadow transition-all duration-300
+                    {{ $selectedVariant === $variant->id ? 'ring-2 ring-primary bg-gray-50' : 'hover:ring-1 hover:ring-gray-300' }}"
                         wire:click="$set('selectedVariant', {{ $variant->id }})">
-                        <h3 class="text-lg font-bold">{{ $variant->service->name }}  <span class="text-sm text-gray-500">{{ $variant->name }}</span></h3>
-                        {{-- datos extra de la variante --}}
+                        <h3 class="text-lg font-bold">
+                            {{ $variant->service->name }}
+                            <span class="text-sm text-gray-500">{{ $variant->name }}</span>
+                        </h3>
+
+                        @if ($selectedVariant === $variant->id)
+                            <div class="mt-4">
+                                <flux:radio.group wire:model="selectedVariantType.{{ $variant->service_id }}"
+                                    label="Selecciona">
+                                    <flux:radio value="cuadricula" label="Cuadrícula" />
+                                    <flux:radio value="cuadricula_trama" label="Cuadrícula con trama" />
+                                    <flux:radio value="sin_cuadricula" label="Sin Cuadrícula" />
+                                </flux:radio.group>
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>
@@ -60,8 +73,98 @@
             </div>
         @endif
 
-         @if ($step === 3)
-            <p>{{ $service['service_id'] }}</p>
+
+        @if ($step === 3)
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                <!-- FORMULARIO -->
+                <div class="md:col-span-2 bg-white p-6 rounded-xl shadow">
+                    <h2 class="text-xl font-bold mb-1">Ingresa la información en los siguientes campos</h2>
+                    <p class="text-sm text-gray-500 mb-6">lorem ipsum lorem ipsum lorem ipsum</p>
+
+                    <!-- CLIENTE -->
+                    <div class="mb-6">
+                        <label class="block mb-2 text-sm font-medium">Selecciona un cliente *</label>
+                        <flux:select wire:model="clienteId" placeholder="Selecciona al cliente">
+                            <flux:select.option value="">Selecciona</flux:select.option>
+                            @foreach ($clients as $client)
+                                <flux:select.option value="{{ $client->id }}">{{ $client->name }}
+                                </flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </div>
+
+                    <!-- DATOS DE LA PÉRGOLA -->
+                    <div>
+                        <div>
+                            <h3 class="font-semibold text-sm mb-4">Ingresa la información de la pérgola.</h3>
+                            <div class="grid grid-cols-2 gap-4 max-w-xs">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Medida A</label>
+                                    <input type="text" wire:model="medidaA"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Medida B</label>
+                                    <input type="text" wire:model="medidaB"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Alto</label>
+                                    <input type="text" wire:model="alto"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Columnas</label>
+                                    <input type="text" wire:model="n_columnas"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Bajantes</label>
+                                    <input type="text" wire:model="n_bajantes"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Anillos</label>
+                                    <input type="text" wire:model="anillos"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="#" class="text-primary text-sm font-medium">+ agregar otro servicio</a>
+                    </div>
+
+                    <div class="mt-6">
+                        <flux:button wire:click="calcularTotal">Calcular</flux:button>
+                    </div>
+                </div>
+
+                <!-- RESUMEN -->
+                <div class="bg-white p-6 rounded-xl shadow">
+                    <h3 class="text-lg font-bold mb-4">Resumen</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span>PVP</span>
+                            <span>${{ number_format($pvp, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span>IVA (15%)</span>
+                            <span>${{ number_format($iva, 2) }}</span>
+                        </div>
+                        <hr>
+                        <div class="flex justify-between text-base font-semibold">
+                            <span>Total</span>
+                            <span>${{ number_format($total, 2) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-right">
+                        <flux:button icon="arrow-right" wire:click="finalizar">Finalizar</flux:button>
+                    </div>
+                </div>
+            </div>
         @endif
 
     </div>
