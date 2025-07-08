@@ -7,12 +7,12 @@
         </div>
 
         <div class="px-6 py-10 bg-white mt-6 rounded-2xl">
-            <div class="mb-8">
-                <h2 class="text-xl font-semibold mb-1">Selecciona el servicio a cotizar</h2>
-                <p class="text-sm text-gray-500">A continuacion, sigue los pasos para realizar una cotización.</p>
-            </div>
-            @if ($step === 1)
 
+            @if ($step === 1)
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-1">Selecciona el servicio a cotizar</h2>
+                    <p class="text-sm text-gray-500">A continuacion, sigue los pasos para realizar una cotización.</p>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     @foreach ($services as $service)
                         <div class="rounded-2xl p-4 cursor-pointer
@@ -56,8 +56,7 @@
 
                         @if ($selectedVariant === $variant->id)
                             <div class="mt-4">
-                                <flux:radio.group wire:model="selectedVariantType.{{ $variant->service_id }}"
-                                    label="Selecciona">
+                                <flux:radio.group wire:model="selectedCuadricula" label="Selecciona">
                                     <flux:radio value="cuadricula" label="Cuadrícula" />
                                     <flux:radio value="cuadricula_trama" label="Cuadrícula con trama" />
                                     <flux:radio value="sin_cuadricula" label="Sin Cuadrícula" />
@@ -132,13 +131,76 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <a href="#" class="text-primary text-sm font-medium">+ agregar otro servicio</a>
+                    <!-- DATOS DE LA CUADRICULA -->
+
+                    @if ($selectedCuadricula === 'cuadricula')
+                        <flux:separator class="my-8" />
+
+                        <div class="mt-6">
+                            <h3 class="font-semibold text-sm mb-4">Ingresa la información de la cuadricula.</h3>
+                            <div class="grid grid-cols-2 gap-4 max-w-xs">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Medida A</label>
+                                    <input type="text" wire:model="medidaACuadricula"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Medida B</label>
+                                    <input type="text" wire:model="medidaBCuadricula"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Distancia Palillaje</label>
+                                    <input type="text" wire:model="distanciaPalillajeCuadricula"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Alto</label>
+                                    <input type="text" wire:model="altoCuadricula"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="mt-6">
+                            <h3 class="font-semibold text-sm mb-4">Ingresa la información de la cuadricula trama.</h3>
+                            <div class="grid grid-cols-2 gap-4 max-w-xs">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Medida A</label>
+                                    <input type="text" wire:model="medidaACuadriculaTrama"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Medida B</label>
+                                    <input type="text" wire:model="medidaBCuadriculaTrama"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Distancia Palillaje</label>
+                                    <input type="text" wire:model="distanciaPalillajeCuadriculaTrama"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Alto</label>
+                                    <input type="text" wire:model="altoCuadriculaTrama"
+                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+
+                    <div class="flex justify-end gap-4">
+                        <div class="mt-4">
+                            <a href="#" class="text-primary text-sm font-medium">+ agregar otro servicio</a>
+                        </div>
+
+                        <div class="mt-6">
+                            <flux:button variant='primary' wire:click="calcularTotal">Calcular</flux:button>
+                        </div>
                     </div>
 
-                    <div class="mt-6">
-                        <flux:button wire:click="calcularTotal">Calcular</flux:button>
-                    </div>
+
                 </div>
 
                 <!-- RESUMEN -->
