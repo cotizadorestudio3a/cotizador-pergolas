@@ -7,25 +7,29 @@ use App\Models\ServiceVariants;
 use App\Services\Cuadriculas\CuadriculaFactory;
 use Livewire\Component;
 use App\Services\Pergolas\PergolaFactory;
+use Livewire\Attributes\Validate;
 
 class Index extends Component
 {
-    public int $step = 3;          // 1 = servicio-color, 2 = variante
-    public ?int $selectedService = null;
-    public array $selectedColor = [];        // [service_id => color]
-    public ?int $selectedVariant = null;      // id de la variante
-    public ?string $selectedCuadricula = 'cuadricula';
+    public int $step = 1;
+    public ?int $selectedService = 1; // id de la pergola o servicio
+    public ?string $selectedColor;
+    public ?int $selectedVariant = 1;      // id de la variante
+    public ?string $selectedCuadricula;
+    public $available_services;
+    public $available_variants;
     public $variants;
     public $pvp = 0;
     public $iva = 0;
     public $total = 0;
-    public array $service = [];
+    public array $added_services = [];
     public $medidaA;
     public $medidaB;
     public $alto;
     public $n_columnas;
     public $n_bajantes;
     public $anillos;
+    public $client_id;
 
     // Inputs cuadricula
     public $medidaACuadricula;
@@ -37,14 +41,15 @@ class Index extends Component
     public function irPasoSiguiente()
     {
         if ($this->step === 1) {
-            // Validar servicio y color
-            $serviceId = $this->selectedService;
-            $color = $this->selectedColor[$serviceId] ?? null;
+            $this->validate([
+                'selectedColor' => 'required'
+            ], [
+                'selectedColor' => 'Por favor, seleccione un color.'
+            ]);
 
-            if (!$serviceId || !$color) {
-                $this->dispatch('error', message: 'Elige un servicio y un color.');
-                return;
-            }
+            $serviceId = $this->selectedService;
+            $color = $this->selectedColor ?? null;
+
             // Cargar variantes del servicio elegido
             $this->variants = ServiceVariants::where('service_id', $serviceId)->get();
             $this->step = 2;          // Avanzar al paso 2
@@ -52,50 +57,51 @@ class Index extends Component
         }
 
         if ($this->step === 2) {
-            if (!$this->selectedVariant) {
-                $this->dispatch('error', message: 'Selecciona una variante.');
-                return;
-            }
 
-            $this->service = [
+            $this->validate([
+                'selectedVariant' => 'required',
+                'selectedCuadricula' => 'required'
+            ], [
+                'selectedVariant' => 'Por favor, seleccione una variante.',
+                'selectedCuadricula' => 'Por favor, seleccione una cuadrícula.'
+            ]);
+
+            $this->added_services[] = [
                 "service_id" => $this->selectedService,
-                "color" => $this->selectedColor[$this->selectedService],
+                "color" => $this->selectedColor,
                 "variant_id" => $this->selectedVariant,
                 "selected_cuadricula" => $this->selectedCuadricula
             ];
 
-            // Créa cotización o redirígelo al siguiente formulario.
             $this->step = 3;
-            $this->dispatch('irPasoSiguiente', $this->service);
-        }
-
-        if ($this->step === 3) {
+            $this->dispatch('irPasoSiguiente', $this->added_services);
         }
     }
 
     public function calcularTotal()
     {
-        $this->selectedService = 1; 
+        $this->validatePergolaInputs();
+        //empty($this->selectedCuadricula) ? $this->validateCuadriculaInputs() : $this->validateCuadriculaTramaInputs();
+
         $pergola = PergolaFactory::crear($this->selectedService, $this->getInputs());
         $total_pergola = $pergola->calcular();
 
         if ($this->selectedCuadricula === 'cuadricula') {
+            $this->validateCuadriculaInputs();
             $cuadricula = CuadriculaFactory::crear($this->selectedCuadricula, $this->getInputsCuadricula());
             $total_cuadricula = $cuadricula->calcular();
-        } else {
+        } elseif ($this->selectedCuadricula === 'cuadricula_trama') {
+            $this->validateCuadriculaTramaInputs();
             $total_cuadricula = $this->calcularCuadriculaTrama();
         }
 
-        // Cálculo del PVP total (pérgola + cuadrícula, sin IVA)
-        $pvp_total = $total_pergola['pvp_pergola'] + $total_cuadricula['pvp_cuadricula'];
+        // Cálculo del PVP total (pérgola + cuadrícula (si la hay ), sin IVA)
+        $pvp_total = $total_pergola['pvp_pergola'] + ($total_cuadricula['pvp_cuadricula'] ?? 0);
 
-        // Cálculo del IVA (15% del PVP total)
         $iva_total = $pvp_total * 0.15;
 
-        // Cálculo del total (PVP total + IVA)
         $total = $pvp_total + $iva_total;
 
-        // Asignación a las propiedades
         $this->pvp = round($pvp_total);
         $this->iva = $iva_total;
         $this->total = $total;
@@ -115,12 +121,64 @@ class Index extends Component
 
     private function getInputsCuadricula()
     {
-        return [ 
+        return [
             "medidaA" => $this->medidaACuadricula,
             "medidaB" => $this->medidaBCuadricula,
             "distanciaPalillaje" => $this->distanciaPalillajeCuadricula,
             "alto" => $this->altoCuadricula
         ];
+    }
+
+    public function decrementStep()
+    {
+        if ($this->step > 1) {
+            $this->step--;
+            $this->added_services = [];
+        }
+    }
+
+    private function validatePergolaInputs()
+    {
+        $this->validate(
+            [
+                'medidaA' => 'required|numeric',
+                'medidaB' => 'required|numeric',
+                'alto' => 'required|numeric',
+                'n_columnas' => 'required|numeric',
+                'n_bajantes' => 'required|numeric',
+                'anillos' => 'required|numeric',
+                'client_id' => 'required'
+            ],
+            [
+                'medidaA.required' => 'Por favor, ingresa la medida A.',
+                'medidaB.required' => 'Por favor, ingresa la medida B.',
+                'alto.required' => 'Por favor, ingresa el alto.',
+                'n_columnas.required' => 'Por favor, ingresa el número de columnas.',
+                'n_bajantes.required' => 'Por favor, ingresa el número de bajantes.',
+                'anillos.required' => 'Por favor, ingresa el número de anillos.',
+                'client_id.required' => 'Por favor, selecciona un cliente.'
+            ]
+        );
+    }
+
+    private function validateCuadriculaInputs()
+    {
+        $this->validate([
+            'medidaACuadricula' => 'required|numeric',
+            'medidaBCuadricula' => 'required|numeric',
+            'distanciaPalillajeCuadricula' => 'required|numeric',
+            'altoCuadricula' => 'required|numeric',
+        ], [
+            'medidaACuadricula.required' => 'Por favor, ingresa la medida A.',
+            'medidaBCuadricula.required' => 'Por favor, ingresa la medida B.',
+            'distanciaPalillajeCuadricula.required' => 'Por favor, ingresa la distancia de palillaje.',
+            'altoCuadricula.required' => 'Por favor, ingresa el alto.',
+        ]);
+    }
+    public function mount()
+    {
+        $this->available_services = Services::all(['id', 'name']);
+        $this->available_variants = ServiceVariants::all(['id', 'name']);
     }
 
 
@@ -129,15 +187,11 @@ class Index extends Component
         $services = Services::all();
         $variants = $this->variants;
         $clients = auth()->user()->clients;
-        return view('livewire.vendor.quotes.index', compact('services', 'variants', 'clients'));
+        $added_services = $this->added_services;
+        return view('livewire.vendor.quotes.index', compact('services', 'variants', 'clients', 'added_services'));
     }
 
-
-
-
-
-
-/*
+    /*
     private function calcularCuadriculaTrama()
     {
         $this->numero_cuadriculas = ceil(min($this->medidaACuadriculaTrama, $this->medidaBCuadriculaTrama) / $this->distanciaPalillajeCuadriculaTrama) + 1;
