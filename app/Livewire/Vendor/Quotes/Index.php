@@ -18,6 +18,7 @@ class Index extends Component
     public ?string $selectedCuadricula;
     public $available_services;
     public $available_variants;
+    public $pergola_inputs = [];
     public $variants;
     public $pvp = 0;
     public $iva = 0;
@@ -30,6 +31,7 @@ class Index extends Component
     public $n_bajantes;
     public $anillos;
     public $client_id;
+    public $pdf_orden_produccion;
 
     // Inputs cuadricula
     public $medidaACuadricula;
@@ -81,9 +83,9 @@ class Index extends Component
     public function calcularTotal()
     {
         $this->validatePergolaInputs();
-        //empty($this->selectedCuadricula) ? $this->validateCuadriculaInputs() : $this->validateCuadriculaTramaInputs();
 
-        $pergola = PergolaFactory::crear($this->selectedService, $this->getInputs());
+        $this->pergola_inputs = $this->getPergolaInputs();
+        $pergola = PergolaFactory::crear($this->selectedService, $this->pergola_inputs);
         $total_pergola = $pergola->calcular();
 
         if ($this->selectedCuadricula === 'cuadricula') {
@@ -105,9 +107,19 @@ class Index extends Component
         $this->pvp = round($pvp_total);
         $this->iva = $iva_total;
         $this->total = $total;
+
     }
 
-    private function getInputs()
+    public function generatePDFFiles()
+    {
+        $this->step = 4;
+
+        $pergola = PergolaFactory::crear($this->selectedService, $this->pergola_inputs);
+        $pergola->calcular();
+        $this->pdf_orden_produccion = $pergola->obtenerPDFOrdenProduccion();
+    }
+
+    private function getPergolaInputs()
     {
         return [
             "medidaA" => $this->medidaA,
@@ -188,7 +200,8 @@ class Index extends Component
         $variants = $this->variants;
         $clients = auth()->user()->clients;
         $added_services = $this->added_services;
-        return view('livewire.vendor.quotes.index', compact('services', 'variants', 'clients', 'added_services'));
+        $pdf_orden_produccion = $this->pdf_orden_produccion;
+        return view('livewire.vendor.quotes.index', compact('services', 'variants', 'clients', 'added_services', 'pdf_orden_produccion'));
     }
 
     /*

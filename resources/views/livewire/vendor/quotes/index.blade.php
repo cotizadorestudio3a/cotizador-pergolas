@@ -65,5 +65,11 @@
                 />
             @endif
 
+            @if ($step === 4)
+                <x-vendor.quotes.generate-pdf-files 
+                :pdf_orden_produccion="$pdf_orden_produccion"
+                />
+            @endif
+
         </div>
     </div>

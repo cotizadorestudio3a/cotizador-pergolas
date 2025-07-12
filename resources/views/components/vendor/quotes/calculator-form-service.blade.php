@@ -139,7 +139,7 @@
                     </span>
                 </flux:button>
 
-                <flux:button icon="arrow-right" wire:click="finalizar" variant="primary"
+                <flux:button icon="arrow-right" wire:click="generatePDFFiles" variant="primary"
                     class="min-w-[120px] transition-all duration-200 hover:shadow-sm">
                     <span class="flex items-center space-x-2">
                         <span>Finalizar</span>
