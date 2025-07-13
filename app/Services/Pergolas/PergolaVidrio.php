@@ -78,7 +78,7 @@ class PergolaVidrio extends PergolaBase
     public $unidades_viga_principal_sujecion;
     public $unidades_viga_secundaria;
     public $unidades_columna;
-    public $unidades_anillos;
+    public $unidades_anillo;
     public $unidades_canal_agua;
     public $unidades_alucobond_canal;
     public $unidades_ancla;
@@ -226,7 +226,7 @@ class PergolaVidrio extends PergolaBase
         $this->unidades_viga_principal_sujecion = $this->cantidad_viga_principal_sujecion / 6.4;
         $this->unidades_viga_secundaria = $this->cantidad_viga_secundaria / 6.4;
         $this->unidades_columna = $this->cantidad_columna / 6.4;
-        $this->unidades_anillos = $this->cantidad_anillo / 6.4;
+        $this->unidades_anillo = $this->cantidad_anillo / 6.4;
         $this->unidades_canal_agua = $this->cantidad_canal_agua / 6.4;
         $this->unidades_alucobond_canal = round($this->cantidad_alucobond_canal / 2.9768, 0);
         $this->unidades_ancla = $this->cantidad_ancla / 6.4;
@@ -284,7 +284,7 @@ class PergolaVidrio extends PergolaBase
             $this->unidades_viga_principal_sujecion * $this->precio_viga_principal_sujecion +
             $this->unidades_viga_secundaria * $this->precio_viga_secundaria +
             $this->unidades_columna * $this->precio_columna +
-            $this->unidades_anillos * $this->precio_anillo +
+            $this->unidades_anillo * $this->precio_anillo +
             $this->unidades_canal_agua * $this->precio_canal_agua +
             $this->precio_malla * $this->cantidad_malla +
             $this->unidades_alucobond_canal * $this->precio_alucobond_canal +
@@ -444,6 +444,9 @@ class PergolaVidrio extends PergolaBase
             'extras' => [
                 'estrategia_andamios' => $this->alquilar_andamios,
                 'nota_pago_por_dia' => $this->pagar_dia_pergola
+            ], 
+            'titulo' => [
+                'titulo_servicio' => 'Pergola de Vidrio'
             ]
         ];
 

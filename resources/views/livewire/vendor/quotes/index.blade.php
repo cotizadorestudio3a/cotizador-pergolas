@@ -40,6 +40,18 @@
                 </div>
             </div>
 
+            <!-- Línea conectora 3-4 -->
+            <div class="h-0.5 w-12 bg-gray-300"></div>
+
+            <!-- Paso 4 -->
+            <div class="relative flex items-center">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center
+                        {{ $step == 4 ? 'bg-gray-800' : 'bg-slate-400' }}
+                ">
+                    <span class="text-white text-xl font-bold">4</span>
+                </div>
+            </div>
+
         </div>
         <div class="px-6 py-10 bg-white mt-6 rounded-2xl">
 
@@ -68,6 +80,7 @@
             @if ($step === 4)
                 <x-vendor.quotes.generate-pdf-files 
                 :pdf_orden_produccion="$pdf_orden_produccion"
+                :pdfs_generados="$pdfs_generados"
                 />
             @endif
 

@@ -7,7 +7,6 @@ use App\Models\ServiceVariants;
 use App\Services\Cuadriculas\CuadriculaFactory;
 use Livewire\Component;
 use App\Services\Pergolas\PergolaFactory;
-use Livewire\Attributes\Validate;
 
 class Index extends Component
 {
@@ -23,7 +22,7 @@ class Index extends Component
     public $pvp = 0;
     public $iva = 0;
     public $total = 0;
-    public array $added_services = [];
+    public array $added_services = []; // los servicios que se agregan
     public $medidaA;
     public $medidaB;
     public $alto;
@@ -31,7 +30,9 @@ class Index extends Component
     public $n_bajantes;
     public $anillos;
     public $client_id;
-    public $pdf_orden_produccion;
+    public array $pdfs_generados = [];
+    public $pdf_orden_produccion = ['hola'];
+
 
     // Inputs cuadricula
     public $medidaACuadricula;
@@ -110,14 +111,32 @@ class Index extends Component
 
     }
 
+
     public function generatePDFFiles()
     {
         $this->step = 4;
 
+        // PDF de la pérgola
         $pergola = PergolaFactory::crear($this->selectedService, $this->pergola_inputs);
         $pergola->calcular();
-        $this->pdf_orden_produccion = $pergola->obtenerPDFOrdenProduccion();
+        $this->pdfs_generados[] = [
+            'titulo' => 'Orden Producción Pérgola',
+            'path' => $pergola->obtenerPDFOrdenProduccion(),
+        ];
+
+        // PDF de la cuadrícula (si existe)
+        if (!empty($this->selectedCuadricula)) {
+            $cuadricula = CuadriculaFactory::crear($this->selectedCuadricula, $this->getInputsCuadricula());
+            $cuadricula->calcular();
+            $this->pdfs_generados[] = [
+                'titulo' => 'Orden Producción Cuadrícula',
+                'path' => $cuadricula->obtenerPDFOrdenProduccion(),
+            ];
+        }
+
+        // Aquí puedes agregar más tipos de PDFs si agregas más servicios.
     }
+
 
     private function getPergolaInputs()
     {

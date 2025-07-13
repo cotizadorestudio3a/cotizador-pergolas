@@ -36,7 +36,7 @@
 
 <body>
 
-    <h1>Orden de Producción - Pérgola Vidrio</h1>
+    <h1>Orden de Producción </h1>
 
     <p><strong>Medidas:</strong> {{ $medidas['medidaA'] }}m x {{ $medidas['medidaB'] }}m</p>
     <p><strong>Altura:</strong> {{ $medidas['alto'] }}m</p>
