@@ -4,7 +4,7 @@ namespace App\Services\Cuadriculas;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class Cuadricula extends CuadriculaBase
+class CuadriculaTrama extends CuadriculaBase
 {
 
     // Inputs cuadricula
@@ -81,7 +81,7 @@ class Cuadricula extends CuadriculaBase
         $this->numero_cuadriculas = ceil(min($this->medidaACuadricula, $this->medidaBCuadricula) / $this->distanciaPalillajeCuadricula) + 1;
         $this->largo_cuadriculas = max($this->medidaACuadricula, $this->medidaBCuadricula);
         $this->vigas_cubierta_cuadricula = ceil(max($this->medidaACuadricula, $this->medidaBCuadricula) / 0.55) + 1;
-        $this->largo_vigas_cuadricula = min($this->medidaBCuadricula, $this->medidaACuadricula);
+        $this->largo_vigas_cuadricula = ceil(min($this->medidaBCuadricula, $this->distanciaPalillajeCuadricula) / 0.55) + 1;
         $this->area_cuadricula = $this->medidaBCuadricula * $this->medidaACuadricula;
 
         return [
@@ -98,7 +98,7 @@ class Cuadricula extends CuadriculaBase
         $this->cantidad_cuadricula = $this->numero_cuadriculas * $this->largo_cuadriculas;
         $this->cantidad_tornillos_cuadricula = $this->numero_cuadriculas * $this->vigas_cubierta_cuadricula;
         $this->cantidad_tornillos_t = ($this->vigas_cubierta_cuadricula * $this->largo_vigas_cuadricula) / 1;
-        $this->cantidad_t_cuadricula = $this->vigas_cubierta_cuadricula * $this->largo_vigas_cuadricula;
+        $this->cantidad_t_cuadricula = ($this->vigas_cubierta_cuadricula * $this->largo_vigas_cuadricula) * 2;
         $this->cantidad_mano_de_obra_cuadricula = $this->area_cuadricula;
 
         return [
@@ -123,11 +123,11 @@ class Cuadricula extends CuadriculaBase
 
     private function calcularTotalesCuadricula()
     {
-        $this->total_cuadricula = $this->precio_cuadricula * ($this->numero_cuadriculas * $this->largo_cuadriculas) / 6.4;
-        $this->total_tornillos_cuadricula = $this->precio_tornillos_cuadricula * $this->numero_cuadriculas * $this->vigas_cubierta_cuadricula;
-        $this->total_tornillos_t = $this->precio_tornillos_t * ($this->vigas_cubierta_cuadricula * $this->largo_vigas_cuadricula);
-        $this->total_t_cuadricula = $this->precio_t_cuadricula * $this->vigas_cubierta_cuadricula * $this->largo_vigas_cuadricula;
-        $this->total_mano_de_obra = $this->precio_mano_de_obra_cuadricula * $this->area_cuadricula;
+        $this->total_cuadricula = $this->precio_cuadricula * $this->unidades_cuadricula;
+        $this->total_tornillos_cuadricula = $this->precio_tornillos_cuadricula * $this->cantidad_tornillos_cuadricula;
+        $this->total_tornillos_t = $this->precio_tornillos_t * $this->cantidad_tornillos_t;
+        $this->total_t_cuadricula = $this->precio_t_cuadricula * $this->cantidad_t_cuadricula;
+        $this->total_mano_de_obra = $this->precio_mano_de_obra_cuadricula * $this->cantidad_mano_de_obra_cuadricula;
 
         $this->costo_total_cuadricula = (
             $this->total_cuadricula + $this->total_tornillos_cuadricula + $this->total_tornillos_t +
@@ -153,7 +153,7 @@ class Cuadricula extends CuadriculaBase
         $this->precio_tornillos_cuadricula = 0.06;
         $this->precio_tornillos_t = 0.06;
         $this->precio_t_cuadricula = 5.42;
-        $this->precio_mano_de_obra_cuadricula = 3;
+        $this->precio_mano_de_obra_cuadricula = 5;
     }
 
     private function obtenerDetalleMateriales()
@@ -169,7 +169,7 @@ class Cuadricula extends CuadriculaBase
         $usarCantidadParaTotal = [
             'tornillos_cuadricula',
             'tornillos_t',
-            'mano_de_obra_cuadricula', 
+            'mano_de_obra_cuadricula',
             't_cuadricula'
         ];
 

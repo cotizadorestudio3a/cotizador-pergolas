@@ -1,4 +1,4 @@
-@props(['pdf_orden_produccion', 'pdf_lista_materiales', 'pdfs_generados'])
+@props(['pdfs_generados'])
 
 <div class="p-4 bg-white rounded-lg">
     <div class="space-y-2 mb-6">

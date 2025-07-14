@@ -31,8 +31,7 @@ class Index extends Component
     public $anillos;
     public $client_id;
     public array $pdfs_generados = [];
-    public $pdf_orden_produccion = ['hola'];
-
+    public $tipos_cuadricula = ['cuadricula', 'cuadricula_trama'];
 
     // Inputs cuadricula
     public $medidaACuadricula;
@@ -94,8 +93,9 @@ class Index extends Component
             $cuadricula = CuadriculaFactory::crear($this->selectedCuadricula, $this->getInputsCuadricula());
             $total_cuadricula = $cuadricula->calcular();
         } elseif ($this->selectedCuadricula === 'cuadricula_trama') {
-            $this->validateCuadriculaTramaInputs();
-            $total_cuadricula = $this->calcularCuadriculaTrama();
+            $this->validateCuadriculaInputs();
+            $cuadricula = CuadriculaFactory::crear($this->selectedCuadricula, $this->getInputsCuadricula());
+            $total_cuadricula = $cuadricula->calcular();
         }
 
         // Cálculo del PVP total (pérgola + cuadrícula (si la hay ), sin IVA)
@@ -125,7 +125,7 @@ class Index extends Component
         ];
 
         // PDF de la cuadrícula (si existe)
-        if (!empty($this->selectedCuadricula)) {
+        if (in_array($this->selectedCuadricula, $this->tipos_cuadricula)) {
             $cuadricula = CuadriculaFactory::crear($this->selectedCuadricula, $this->getInputsCuadricula());
             $cuadricula->calcular();
             $this->pdfs_generados[] = [
@@ -165,6 +165,7 @@ class Index extends Component
         if ($this->step > 1) {
             $this->step--;
             $this->added_services = [];
+            $this->reset('selectedCuadricula');
         }
     }
 
@@ -219,24 +220,6 @@ class Index extends Component
         $variants = $this->variants;
         $clients = auth()->user()->clients;
         $added_services = $this->added_services;
-        $pdf_orden_produccion = $this->pdf_orden_produccion;
-        return view('livewire.vendor.quotes.index', compact('services', 'variants', 'clients', 'added_services', 'pdf_orden_produccion'));
+        return view('livewire.vendor.quotes.index', compact('services', 'variants', 'clients', 'added_services'));
     }
-
-    /*
-    private function calcularCuadriculaTrama()
-    {
-        $this->numero_cuadriculas = ceil(min($this->medidaACuadriculaTrama, $this->medidaBCuadriculaTrama) / $this->distanciaPalillajeCuadriculaTrama) + 1;
-        $this->largo_cuadriculas = max($this->medidaACuadriculaTrama, $this->medidaBCuadriculaTrama);
-        $this->vigas_cubierta_cuadricula = ceil(max($this->medidaACuadriculaTrama, $this->medidaBCuadriculaTrama) / 0.55) + 1;
-        $this->largo_vigas_cuadricula = ceil(min($this->medidaBCuadriculaTrama, $this->distanciaPalillajeCuadriculaTrama) / 0.55) + 1;
-        $this->area_cuadricula = $this->medidaBCuadriculaTrama * $this->medidaACuadriculaTrama;
-
-        $this->total_cuadricula = 10 * ($this->numero_cuadriculas * $this->largo_cuadriculas) / 6.4;
-        $this->total_tornillos_cuadricula = 0.06 * $this->numero_cuadriculas * $this->vigas_cubierta_cuadricula;
-        $this->total_tornillos_t = 0.06 * ($this->vigas_cubierta_cuadricula * $this->largo_vigas_cuadricula);
-        $this->total_t_cuadricula = 5.42 * $this->vigas_cubierta_cuadricula * $this->largo_vigas_cuadricula * 2;
-        $this->total_mano_de_obra = 5 * $this->area_cuadricula;
-    }
-        */
 }

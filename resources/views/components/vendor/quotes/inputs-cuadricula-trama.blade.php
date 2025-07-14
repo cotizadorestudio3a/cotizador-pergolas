@@ -6,22 +6,22 @@
     <div class="grid grid-cols-2 gap-4 max-w-xs">
         <div>
             <label class="block text-sm font-medium mb-1 text-gray-900">Medida A</label>
-            <input type="text" wire:model="medidaACuadriculaTrama"
+            <input type="text" wire:model="medidaACuadricula"
                 class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200">
         </div>
         <div>
             <label class="block text-sm font-medium mb-1 text-gray-900">Medida B</label>
-            <input type="text" wire:model="medidaBCuadriculaTrama"
+            <input type="text" wire:model="medidaBCuadricula"
                 class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200">
         </div>
         <div>
             <label class="block text-sm font-medium mb-1 text-gray-900">Distancia Palillaje</label>
-            <input type="text" wire:model="distanciaPalillajeCuadriculaTrama"
+            <input type="text" wire:model="distanciaPalillajeCuadricula"
                 class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200">
         </div>
         <div>
             <label class="block text-sm font-medium mb-1 text-gray-900">Alto</label>
-            <input type="text" wire:model="altoCuadriculaTrama"
+            <input type="text" wire:model="altoCuadricula"
                 class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200">
         </div>
     </div>

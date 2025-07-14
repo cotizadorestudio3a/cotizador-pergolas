@@ -79,7 +79,6 @@
 
             @if ($step === 4)
                 <x-vendor.quotes.generate-pdf-files 
-                :pdf_orden_produccion="$pdf_orden_produccion"
                 :pdfs_generados="$pdfs_generados"
                 />
             @endif
