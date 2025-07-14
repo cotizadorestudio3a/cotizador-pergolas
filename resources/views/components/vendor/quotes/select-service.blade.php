@@ -116,6 +116,7 @@
                 @endif
             </div>
 
+            
             <flux:button wire:click="irPasoSiguiente" variant="primary" :disabled="!$selectedService"
                 class="min-w-[120px] {{ !$selectedService ? 'opacity-90 cursor-not-allowed' : '' }}">
 
@@ -126,6 +127,8 @@
                     </svg>
                 </span>
             </flux:button>
+
+        
         </div>
     </div>
 </div>

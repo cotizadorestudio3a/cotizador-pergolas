@@ -11,6 +11,7 @@ use App\Services\Pergolas\PergolaFactory;
 class Index extends Component
 {
     public int $step = 1;
+    public int $newServiceStep = 1;
     public ?int $selectedService = 1; // id de la pergola o servicio
     public ?string $selectedColor;
     public ?int $selectedVariant = 1;      // id de la variante
@@ -32,6 +33,8 @@ class Index extends Component
     public $client_id;
     public array $pdfs_generados = [];
     public $tipos_cuadricula = ['cuadricula', 'cuadricula_trama'];
+    public int $activeServiceIndex = 0;
+
 
     // Inputs cuadricula
     public $medidaACuadricula;
@@ -168,6 +171,70 @@ class Index extends Component
             $this->reset('selectedCuadricula');
         }
     }
+
+    /**
+     * Reinicia el flujo para agregar un nuevo servicio manteniendo los que ya fueron agregados.
+     */
+    public function startAddService()
+    {
+        // Iniciar flujo interno del modal
+        $this->newServiceStep = 1;
+
+        // Resetear únicamente los campos de selección del nuevo servicio
+        $this->reset(
+            'selectedService',
+            'selectedColor',
+            'selectedVariant',
+            'selectedCuadricula',
+            'variants'
+        );
+    }
+
+    /**
+     * Avanza al siguiente paso dentro del modal de nuevo servicio.
+     */
+    public function newServiceNextStep()
+    {
+        if ($this->newServiceStep === 1) {
+            $this->validate([
+                'selectedColor' => 'required',
+                'selectedService' => 'required'
+            ], [
+                'selectedColor.required' => 'Seleccione un color',
+                'selectedService.required' => 'Seleccione un servicio'
+            ]);
+
+            $this->variants = ServiceVariants::where('service_id', $this->selectedService)->get();
+            $this->newServiceStep = 2;
+            return;
+        }
+    }
+
+    /**
+     * Confirma la selección en el modal y agrega el servicio a la lista.
+     */
+    public function confirmAddService()
+    {
+        $this->validate([
+            'selectedVariant' => 'required',
+            'selectedCuadricula' => 'required'
+        ]);
+
+        $this->added_services[] = [
+            "service_id" => $this->selectedService,
+            "color" => $this->selectedColor,
+            "variant_id" => $this->selectedVariant,
+            "selected_cuadricula" => $this->selectedCuadricula
+        ];
+
+        // Establecer el nuevo servicio como el activo
+        $this->activeServiceIndex = count($this->added_services) - 1;
+
+        // Reset del modal
+        $this->dispatch('modal-close', name: 'add-service-modal');
+        $this->newServiceStep = 1;
+    }
+
 
     private function validatePergolaInputs()
     {
