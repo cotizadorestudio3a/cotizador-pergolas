@@ -34,6 +34,7 @@ class Index extends Component
     public array $pdfs_generados = [];
     public $tipos_cuadricula = ['cuadricula', 'cuadricula_trama'];
     public int $activeServiceIndex = 0;
+    public array $inputsPorServicio = [];
 
 
     // Inputs cuadricula
@@ -62,7 +63,6 @@ class Index extends Component
         }
 
         if ($this->step === 2) {
-
             $this->validate([
                 'selectedVariant' => 'required',
                 'selectedCuadricula' => 'required'
@@ -71,74 +71,74 @@ class Index extends Component
                 'selectedCuadricula' => 'Por favor, seleccione una cuadrícula.'
             ]);
 
+            $index = count($this->added_services); // índice actual para inputs
+
             $this->added_services[] = [
                 "service_id" => $this->selectedService,
                 "color" => $this->selectedColor,
                 "variant_id" => $this->selectedVariant,
-                "selected_cuadricula" => $this->selectedCuadricula
+                "selected_cuadricula" => $this->selectedCuadricula,
+                "input_index" => $index // ✅ agrega el índice aquí también
             ];
 
             $this->step = 3;
             $this->dispatch('irPasoSiguiente', $this->added_services);
         }
+
     }
 
     public function calcularTotal()
     {
-        $this->validatePergolaInputs();
+        $pvp_total = 0;
 
-        $this->pergola_inputs = $this->getPergolaInputs();
-        $pergola = PergolaFactory::crear($this->selectedService, $this->pergola_inputs);
-        $total_pergola = $pergola->calcular();
+        foreach ($this->added_services as $servicio) {
+            $inputs = $this->inputsPorServicio[$servicio['input_index']];
+            $pergola = PergolaFactory::crear($servicio['service_id'], $inputs);
+            $pergola_total = $pergola->calcular();
 
-        if ($this->selectedCuadricula === 'cuadricula') {
-            $this->validateCuadriculaInputs();
-            $cuadricula = CuadriculaFactory::crear($this->selectedCuadricula, $this->getInputsCuadricula());
-            $total_cuadricula = $cuadricula->calcular();
-        } elseif ($this->selectedCuadricula === 'cuadricula_trama') {
-            $this->validateCuadriculaInputs();
-            $cuadricula = CuadriculaFactory::crear($this->selectedCuadricula, $this->getInputsCuadricula());
-            $total_cuadricula = $cuadricula->calcular();
+            $pvp_total += $pergola_total['pvp_pergola'];
+
+            if (in_array($servicio['selected_cuadricula'], $this->tipos_cuadricula)) {
+                $cuadricula = CuadriculaFactory::crear($servicio['selected_cuadricula'], $inputs);
+                $cuadricula_total = $cuadricula->calcular();
+                $pvp_total += $cuadricula_total['pvp_cuadricula'];
+            }
         }
 
-        // Cálculo del PVP total (pérgola + cuadrícula (si la hay ), sin IVA)
-        $pvp_total = $total_pergola['pvp_pergola'] + ($total_cuadricula['pvp_cuadricula'] ?? 0);
-
-        $iva_total = $pvp_total * 0.15;
-
-        $total = $pvp_total + $iva_total;
-
-        $this->pvp = round($pvp_total);
-        $this->iva = $iva_total;
-        $this->total = $total;
-
+        $this->iva = round($pvp_total * 0.15, 2);
+        $this->pvp = round($pvp_total, 2);
+        $this->total = $this->pvp + $this->iva;
     }
+
 
 
     public function generatePDFFiles()
     {
-        $this->step = 4;
+        $this->pdfs_generados = [];
 
-        // PDF de la pérgola
-        $pergola = PergolaFactory::crear($this->selectedService, $this->pergola_inputs);
-        $pergola->calcular();
-        $this->pdfs_generados[] = [
-            'titulo' => 'Orden Producción Pérgola',
-            'path' => $pergola->obtenerPDFOrdenProduccion(),
-        ];
+        foreach ($this->added_services as $servicio) {
+            $inputs = $this->inputsPorServicio[$servicio['input_index']];
 
-        // PDF de la cuadrícula (si existe)
-        if (in_array($this->selectedCuadricula, $this->tipos_cuadricula)) {
-            $cuadricula = CuadriculaFactory::crear($this->selectedCuadricula, $this->getInputsCuadricula());
-            $cuadricula->calcular();
+            $pergola = PergolaFactory::crear($servicio['service_id'], $inputs);
+            $pergola->calcular();
             $this->pdfs_generados[] = [
-                'titulo' => 'Orden Producción Cuadrícula',
-                'path' => $cuadricula->obtenerPDFOrdenProduccion(),
+                'titulo' => 'Orden Producción Pérgola',
+                'path' => $pergola->obtenerPDFOrdenProduccion(),
             ];
+
+            if (in_array($servicio['selected_cuadricula'], $this->tipos_cuadricula)) {
+                $cuadricula = CuadriculaFactory::crear($servicio['selected_cuadricula'], $inputs);
+                $cuadricula->calcular();
+                $this->pdfs_generados[] = [
+                    'titulo' => 'Orden Producción Cuadrícula',
+                    'path' => $cuadricula->obtenerPDFOrdenProduccion(),
+                ];
+            }
         }
 
-        // Aquí puedes agregar más tipos de PDFs si agregas más servicios.
+        $this->step = 4;
     }
+
 
 
     private function getPergolaInputs()
@@ -222,10 +222,12 @@ class Index extends Component
 
         $this->added_services[] = [
             "service_id" => $this->selectedService,
-            "color" => $this->selectedColor,
             "variant_id" => $this->selectedVariant,
-            "selected_cuadricula" => $this->selectedCuadricula
+            "color" => $this->selectedColor,
+            "selected_cuadricula" => $this->selectedCuadricula,
+            "input_index" => count($this->inputsPorServicio) - 1,
         ];
+
 
         // Establecer el nuevo servicio como el activo
         $this->activeServiceIndex = count($this->added_services) - 1;
@@ -234,6 +236,19 @@ class Index extends Component
         $this->dispatch('modal-close', name: 'add-service-modal');
         $this->newServiceStep = 1;
     }
+
+    public function resetFormularioServicioNuevo()
+    {
+        $this->inputsPorServicio[] = [
+            'medidaA' => null,
+            'medidaB' => null,
+            'alto' => null,
+            'n_columnas' => null,
+            'n_bajantes' => null,
+            'anillos' => null
+        ];
+    }
+
 
 
     private function validatePergolaInputs()

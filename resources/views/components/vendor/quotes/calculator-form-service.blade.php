@@ -54,16 +54,16 @@
                             @endif
 
                             <!-- Inputs de pérgola -->
-                            <x-vendor.quotes.inputs-pergola />
+                            <x-vendor.quotes.inputs-pergola :index="$index" />
 
                             <!-- Inputs de cuadrícula -->
                             @switch($servicio['selected_cuadricula'])
                                 @case('cuadricula')
-                                    <x-vendor.quotes.inputs-cuadricula />
+                                    <x-vendor.quotes.inputs-cuadricula :index="$index" />
                                 @break
 
                                 @case('cuadricula_trama')
-                                    <x-vendor.quotes.inputs-cuadricula-trama />
+                                    <x-vendor.quotes.inputs-cuadricula-trama :index="$index" />
                                 @break
                             @endswitch
                         @endif

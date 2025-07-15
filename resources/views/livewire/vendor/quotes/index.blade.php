@@ -90,15 +90,15 @@
                 <div class="px-6 py-10 bg-white rounded-xl">
                     <!-- Indicador de pasos interno opcional -->
                     @if ($newServiceStep === 1)
-                        <x-vendor.quotes.select-service :services="$services" :selectedService="$selectedService" />
-                        <div class="flex justify-end mt-6">
-                            <button wire:click="newServiceNextStep" variant="primary">Siguiente</button>
+                        <x-vendor.quotes.modals.select-service :services="$services" :selectedService="$selectedService" />
+                        <div class="flex justify-end mt-6 sticky bottom-0">
+                            <flux:button wire:click="newServiceNextStep" variant="primary">Siguiente</flux:button>
                         </div>
                     @endif
 
                     @if ($newServiceStep === 2)
-                        <x-vendor.quotes.select-service-variant :variants="$variants" :selectedVariant="$selectedVariant" />
-                        <div class="flex justify-between mt-6">
+                        <x-vendor.quotes.modals.select-service-variant :variants="$variants" :selectedVariant="$selectedVariant" />
+                        <div class="flex justify-between sticky bottom-0 bg-white p-6">
                             <flux:button wire:click="$set('newServiceStep', 1)" variant="ghost">Atrás</flux:button>
                             <flux:button wire:click="confirmAddService" variant="primary">Agregar servicio</flux:button>
                         </div>
