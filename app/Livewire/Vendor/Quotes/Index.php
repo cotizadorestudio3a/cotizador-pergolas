@@ -76,14 +76,16 @@ class Index extends Component
                 'selectedCuadricula' => 'Por favor, seleccione una cuadrícula.'
             ]);
 
-            $index = count($this->added_services); // índice actual para inputs
+            // Primero crear la entrada de inputs
+            $index = count($this->inputsPorServicio);
+            $this->resetFormularioServicioNuevo();
 
             $this->added_services[] = [
                 "service_id" => $this->selectedService,
                 "color" => $this->selectedColor,
                 "variant_id" => $this->selectedVariant,
                 "selected_cuadricula" => $this->selectedCuadricula,
-                "input_index" => $index // ✅ agrega el índice aquí también
+                "input_index" => $index
             ];
 
             $this->step = 3;
@@ -225,14 +227,17 @@ class Index extends Component
             'selectedCuadricula' => 'required'
         ]);
 
+        // Primero crear la entrada de inputs antes de agregar el servicio
+        $inputIndex = count($this->inputsPorServicio);
+        $this->resetFormularioServicioNuevo();
+
         $this->added_services[] = [
             "service_id" => $this->selectedService,
             "variant_id" => $this->selectedVariant,
             "color" => $this->selectedColor,
             "selected_cuadricula" => $this->selectedCuadricula,
-            "input_index" => count($this->inputsPorServicio) - 1,
+            "input_index" => $inputIndex,
         ];
-
 
         // Establecer el nuevo servicio como el activo
         $this->activeServiceIndex = count($this->added_services) - 1;
@@ -250,7 +255,12 @@ class Index extends Component
             'alto' => null,
             'n_columnas' => null,
             'n_bajantes' => null,
-            'anillos' => null
+            'anillos' => null,
+            'medidaACuadricula' => null,
+            'medidaBCuadricula' => null,
+            'distanciaPalillaje' => null, 
+            'altoCuadricula' => null,
+            'colores_columnas' => [] // Inicializar array de colores vacío
         ];
     }
 
