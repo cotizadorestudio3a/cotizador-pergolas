@@ -78,7 +78,12 @@
                 :iva="$iva" 
                 :total="$total" 
                 :added_services="$added_services" 
-                :activeServiceIndex="$activeServiceIndex" />
+                :activeServiceIndex="$activeServiceIndex"
+                :selectorColorVisible="$selectorColorVisible"
+                :servicioSelectorColor="$servicioSelectorColor"
+                :indiceSelectorColor="$indiceSelectorColor"
+                :selectedColor="$selectedColor"
+                :inputsPorServicio="$inputsPorServicio" />
             @endif
 
             @if ($step === 4)

@@ -6,7 +6,7 @@
     </div>
 
     <!-- Grid de variantes más compacto -->
-    <div class="grid grid-cols-1 gap-3">
+    <div class="grid grid-cols-2 gap-3">
         @foreach ($variants as $variant)
             <div class="group relative overflow-hidden rounded-lg border transition-all duration-300 ease-in-out
                 {{ $selectedVariant === $variant->id

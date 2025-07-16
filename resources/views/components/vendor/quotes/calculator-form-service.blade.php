@@ -8,6 +8,11 @@
     'total' => 0,
     'added_services' => [],
     'activeServiceIndex',
+    'selectorColorVisible' => false,
+    'servicioSelectorColor' => null,
+    'indiceSelectorColor' => null,
+    'selectedColor' => null,
+    'inputsPorServicio' => []
 ])
 
 <div class="min-h-screen flex flex-col">
@@ -54,7 +59,13 @@
                             @endif
 
                             <!-- Inputs de pérgola -->
-                            <x-vendor.quotes.inputs-pergola :index="$index" />
+                            <x-vendor.quotes.inputs-pergola 
+                                :index="$index"
+                                :selectorColorVisible="$selectorColorVisible ?? false"
+                                :servicioSelectorColor="$servicioSelectorColor ?? null"
+                                :indiceSelectorColor="$indiceSelectorColor ?? null"
+                                :selectedColor="$selectedColor ?? null"
+                                :inputsPorServicio="$inputsPorServicio ?? []" />
 
                             <!-- Inputs de cuadrícula -->
                             @switch($servicio['selected_cuadricula'])

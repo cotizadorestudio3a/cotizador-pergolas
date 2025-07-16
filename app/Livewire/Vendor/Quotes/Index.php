@@ -36,6 +36,11 @@ class Index extends Component
     public int $activeServiceIndex = 0;
     public array $inputsPorServicio = [];
 
+    // Variables para selector de color de columnas
+    public bool $selectorColorVisible = false;
+    public ?int $servicioSelectorColor = null;
+    public ?int $indiceSelectorColor = null;
+
 
     // Inputs cuadricula
     public $medidaACuadricula;
@@ -289,6 +294,64 @@ class Index extends Component
             'altoCuadricula.required' => 'Por favor, ingresa el alto.',
         ]);
     }
+    
+    // Métodos para manejo de colores de columnas
+    public function abrirSelectorColorColumna($servicioIndex, $columnaIndex)
+    {
+        $this->servicioSelectorColor = $servicioIndex;
+        $this->indiceSelectorColor = $columnaIndex;
+        $this->selectorColorVisible = true;
+    }
+
+    public function cerrarSelectorColorColumna()
+    {
+        $this->selectorColorVisible = false;
+        $this->servicioSelectorColor = null;
+        $this->indiceSelectorColor = null;
+    }
+
+    public function cambiarColorColumna($color)
+    {
+        if ($this->servicioSelectorColor !== null && $this->indiceSelectorColor !== null) {
+            // Inicializar el array de colores si no existe
+            if (!isset($this->inputsPorServicio[$this->servicioSelectorColor]['colores_columnas'])) {
+                $this->inputsPorServicio[$this->servicioSelectorColor]['colores_columnas'] = [];
+            }
+            
+            // Asignar el color a la columna específica
+            $this->inputsPorServicio[$this->servicioSelectorColor]['colores_columnas'][$this->indiceSelectorColor] = $color;
+        }
+        
+        $this->cerrarSelectorColorColumna();
+    }
+    
+    public function updatedInputsPorServicio($value, $key)
+    {
+        // Cuando se actualiza el número de columnas, ajustar colores
+        if (str_contains($key, '.n_columnas')) {
+            $servicioIndex = explode('.', $key)[0];
+            $numColumnas = (int)$value;
+            
+            if ($numColumnas > 0) {
+                // Obtener colores existentes o inicializar array vacío
+                $coloresExistentes = $this->inputsPorServicio[$servicioIndex]['colores_columnas'] ?? [];
+                $colorDefault = $this->selectedColor ?? 'azul';
+                
+                // Ajustar el array de colores al nuevo número de columnas
+                $coloresActualizados = [];
+                for ($i = 0; $i < $numColumnas; $i++) {
+                    // Mantener color existente o usar el color por defecto
+                    $coloresActualizados[$i] = $coloresExistentes[$i] ?? $colorDefault;
+                }
+                
+                $this->inputsPorServicio[$servicioIndex]['colores_columnas'] = $coloresActualizados;
+            } else {
+                // Si no hay columnas, limpiar el array de colores
+                $this->inputsPorServicio[$servicioIndex]['colores_columnas'] = [];
+            }
+        }
+    }
+    
     public function mount()
     {
         $this->available_services = Services::all(['id', 'name']);
