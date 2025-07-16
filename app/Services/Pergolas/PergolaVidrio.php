@@ -2,6 +2,8 @@
 
 namespace App\Services\Pergolas;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class PergolaVidrio extends PergolaBase
 {
 
@@ -32,6 +34,10 @@ class PergolaVidrio extends PergolaBase
     // Flags de desperdicio
     public $aumento_desperdicio_vigas;
     public $aumento_desperdicio_columnas;
+
+    // Decisiones
+    public $alquilar_andamios;
+    public $pagar_dia_pergola;
 
     // Cantidades
     public $cantidad_viga_principal_sujecion;
@@ -71,8 +77,8 @@ class PergolaVidrio extends PergolaBase
     // Unidades
     public $unidades_viga_principal_sujecion;
     public $unidades_viga_secundaria;
-    public $unidades_columnas;
-    public $unidades_anillos;
+    public $unidades_columna;
+    public $unidades_anillo;
     public $unidades_canal_agua;
     public $unidades_alucobond_canal;
     public $unidades_ancla;
@@ -219,8 +225,8 @@ class PergolaVidrio extends PergolaBase
     {
         $this->unidades_viga_principal_sujecion = $this->cantidad_viga_principal_sujecion / 6.4;
         $this->unidades_viga_secundaria = $this->cantidad_viga_secundaria / 6.4;
-        $this->unidades_columnas = $this->cantidad_columna / 6.4;
-        $this->unidades_anillos = $this->cantidad_anillo / 6.4;
+        $this->unidades_columna = $this->cantidad_columna / 6.4;
+        $this->unidades_anillo = $this->cantidad_anillo / 6.4;
         $this->unidades_canal_agua = $this->cantidad_canal_agua / 6.4;
         $this->unidades_alucobond_canal = round($this->cantidad_alucobond_canal / 2.9768, 0);
         $this->unidades_ancla = $this->cantidad_ancla / 6.4;
@@ -277,8 +283,8 @@ class PergolaVidrio extends PergolaBase
         $this->total_pergola = (
             $this->unidades_viga_principal_sujecion * $this->precio_viga_principal_sujecion +
             $this->unidades_viga_secundaria * $this->precio_viga_secundaria +
-            $this->unidades_columnas * $this->precio_columna +
-            $this->unidades_anillos * $this->precio_anillo +
+            $this->unidades_columna * $this->precio_columna +
+            $this->unidades_anillo * $this->precio_anillo +
             $this->unidades_canal_agua * $this->precio_canal_agua +
             $this->precio_malla * $this->cantidad_malla +
             $this->unidades_alucobond_canal * $this->precio_alucobond_canal +
@@ -316,6 +322,13 @@ class PergolaVidrio extends PergolaBase
         $this->costo_visualizacion = 75;
         $this->costo_documentacion = 50;
 
+        $this->alquilar_andamios =
+            ($this->cantidad_andamios * $this->tiempoDias > $this->cantidad_andamios * 60)
+            ? 'COMPRAR ANDAMIOS'
+            : 'ALQUILAR ANDAMIOS';
+        $this->pagar_dia_pergola = $this->cantidad_pergola < 10 ? "PAGAR DIA" : "";
+
+
         $this->pvp_pergola =
             $this->total_pergola +
             $this->margen_negociacion +
@@ -327,6 +340,88 @@ class PergolaVidrio extends PergolaBase
         $this->total = $this->pvp_pergola;
     }
 
+    public function obtenerDetalleMateriales(): array
+    {
+        $materiales = [
+            'Viga Principal Sujeción' => 'viga_principal_sujecion',
+            'Viga Secundaria' => 'viga_secundaria',
+            'Columna (ml)' => 'columna',
+            'Anillo (ml)' => 'anillo',
+            'Canal de Agua' => 'canal_agua',
+            'Malla' => 'malla',
+            'Alucobond Canal' => 'alucobond_canal',
+            'Ancla' => 'ancla',
+            'Tacos' => 'tacos',
+            'Tornillos Pared' => 'tornillos_pared',
+            'Tornillos Piso' => 'tornillos_piso',
+            'Tornillos Aluminio' => 'tornillos_aluminio',
+            'Fleje Metalico' => 'fleje_metalico',
+            'Aquaprotect' => 'aquaprotect',
+            'Andamios' => 'andamios',
+            'T' => 't',
+            'Ángulo' => 'angulo',
+            'Cinta Doble Faz' => 'cinta_doble_faz',
+            'Silicón Sellante' => 'silicon_sellante',
+            'Silicón Color' => 'silicon_color',
+            'Masking' => 'masking',
+            'Alumband' => 'alumband',
+            'Vidrio' => 'vidrio',
+            'Tubo PVC 3”' => 'tubo_pvc_3',
+            'Codo PVC 45° 3”' => 'codo_pvc_45_3',
+            'Codo PVC 90° 3”' => 'codo_pvc_90_3',
+            'Calipega' => 'calipega',
+            'Plástico Negro' => 'plastico_negro',
+            'Pergola (m²)' => 'pergola',
+            'Columnas (uds)' => 'columnas',
+            'N Bajantes' => 'n_bajantes',
+            'Aluco Bond' => 'aluco_bond',
+            'Anillos (uds)' => 'anillos',
+        ];
+
+        // Materiales que deben calcular el total con 'cantidad * precio'
+        $usarCantidadParaTotal = [
+            'malla',
+            'tacos',
+            'tornillos_pared',
+            'tornillos_piso',
+            'tornillos_aluminio',
+            'fleje_metalico',
+            'aquaprotect',
+            'vidrio',
+            'codo_pvc_45_3',
+            'codo_pvc_90_3',
+            'calipega',
+            'plastico_negro',
+            'pergola',
+            'columnas',
+            'n_bajantes',
+            'aluco_bond',
+            'anillos',
+        ];
+
+
+        $detalle = [];
+        foreach ($materiales as $nombre => $clave) {
+            $cantidad = $this->{'cantidad_' . $clave} ?? 0;
+            $unidades = $this->{'unidades_' . $clave} ?? 0;
+            $precio = $this->{'precio_' . $clave} ?? 0;
+
+            $total = in_array($clave, $usarCantidadParaTotal)
+            ? $cantidad * $precio
+            : $unidades * $precio;
+
+            $detalle[$nombre] = [
+                'cantidad' => $cantidad,
+                'unidades' => $unidades,
+                'precio_unitario' => $precio,
+                'total' => $total
+            ];
+        }
+        return $detalle;
+    }
+
+
+
 
     public function obtenerPDFCotizacion(): string
     {
@@ -337,7 +432,28 @@ class PergolaVidrio extends PergolaBase
 
     public function obtenerPDFOrdenProduccion(): string
     {
-        // Genera PDF técnico o de producción
-        return 'ruta/a/pdf_produccion.pdf';
+        $materiales = $this->obtenerDetalleMateriales();
+        $data = [
+            'materiales' => $materiales,
+            'medidas' => [
+                'medidaA' => $this->medidaA,
+                'medidaB' => $this->medidaB,
+                'alto' => $this->alto,
+                'area' => $this->area,
+            ],
+            'extras' => [
+                'estrategia_andamios' => $this->alquilar_andamios,
+                'nota_pago_por_dia' => $this->pagar_dia_pergola
+            ], 
+            'titulo' => [
+                'titulo_servicio' => 'Pergola de Vidrio'
+            ]
+        ];
+
+        $pdf = Pdf::loadView('pdfs.orden-produccion', $data);
+        $path = 'pdf/orden_produccion_' . now()->timestamp . '.pdf';
+        $pdf->save(storage_path('app/public/' . $path));
+        
+        return $path;
     }
 }

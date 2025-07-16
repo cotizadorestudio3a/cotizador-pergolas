@@ -2,6 +2,8 @@
 
 namespace App\Services\Cuadriculas;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 class Cuadricula extends CuadriculaBase
 {
 
@@ -10,7 +12,6 @@ class Cuadricula extends CuadriculaBase
     public $medidaBCuadricula;
     public $distanciaPalillajeCuadricula;
     public $altoCuadricula;
-
 
     // Datos cuadricula(s)
     public $numero_cuadriculas;
@@ -129,8 +130,8 @@ class Cuadricula extends CuadriculaBase
         $this->total_mano_de_obra = $this->precio_mano_de_obra_cuadricula * $this->area_cuadricula;
 
         $this->costo_total_cuadricula = (
-        $this->total_cuadricula + $this->total_tornillos_cuadricula + $this->total_tornillos_t +
-        $this->total_t_cuadricula + $this->total_mano_de_obra
+            $this->total_cuadricula + $this->total_tornillos_cuadricula + $this->total_tornillos_t +
+            $this->total_t_cuadricula + $this->total_mano_de_obra
         );
 
         $this->margen_negociacion_cuadricula = round($this->costo_total_cuadricula * 0.08, 2);
@@ -139,12 +140,11 @@ class Cuadricula extends CuadriculaBase
 
         // Cálculo del PVP de la cuadrícula (sin IVA)
         $this->pvp_cuadricula = round($this->costo_total_cuadricula +
-        $this->margen_negociacion_cuadricula +
-        $this->margen_imprevistos_cuadricula +
-        $this->margen_utilidad_cuadricula, 2);
+            $this->margen_negociacion_cuadricula +
+            $this->margen_imprevistos_cuadricula +
+            $this->margen_utilidad_cuadricula, 2);
 
-        $this->total = $this->pvp_cuadricula ;
-
+        $this->total = $this->pvp_cuadricula;
     }
 
     private function definirPreciosCuadricula()
@@ -156,6 +156,44 @@ class Cuadricula extends CuadriculaBase
         $this->precio_mano_de_obra_cuadricula = 3;
     }
 
+    private function obtenerDetalleMateriales()
+    {
+        $materiales = [
+            "Cuadricula" => 'cuadricula',
+            "Tornillos Cuadricula" => 'tornillos_cuadricula',
+            "Tornillos T" => 'tornillos_t',
+            "T" => 't_cuadricula',
+            "Mano de obra" => 'mano_de_obra_cuadricula'
+        ];
+
+        $usarCantidadParaTotal = [
+            'tornillos_cuadricula',
+            'tornillos_t',
+            'mano_de_obra_cuadricula', 
+            't_cuadricula'
+        ];
+
+        $detalle = [];
+        foreach ($materiales as $nombre => $clave) {
+            $cantidad = $this->{'cantidad_' . $clave} ?? 0;
+            $unidades = $this->{'unidades_' . $clave} ?? 0;
+            $precio = $this->{'precio_' . $clave} ?? 0;
+
+            $total = in_array($clave, $usarCantidadParaTotal)
+                ? $cantidad * $precio
+                : $unidades * $precio;
+
+            $detalle[$nombre] = [
+                'cantidad' => $cantidad,
+                'unidades' => $unidades,
+                'precio_unitario' => $precio,
+                'total' => $total
+            ];
+        }
+
+        return $detalle;
+    }
+
     public function obtenerPDFCotizacion(): string
     {
         return '';
@@ -163,7 +201,23 @@ class Cuadricula extends CuadriculaBase
 
     public function obtenerPDFOrdenProduccion(): string
     {
-        return '';
-        
+        $this->calcular();
+
+        $materiales = $this->obtenerDetalleMateriales();
+        $data = [
+            'materiales' => $materiales,
+            'medidas' => [
+                'medidaA' => $this->medidaACuadricula,
+                'medidaB' => $this->medidaBCuadricula,
+                'alto' => $this->altoCuadricula,
+                'area' => $this->area_cuadricula,
+            ],
+        ];
+
+        $pdf = Pdf::loadView('pdfs.orden-produccion', $data);
+        $path = 'pdf/orden_produccion/cuadriculas/orden_produccion_' . now()->timestamp . '.pdf';
+        $pdf->save(storage_path('app/public/' . $path));
+
+        return $path;
     }
 }

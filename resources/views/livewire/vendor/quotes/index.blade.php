@@ -6,228 +6,110 @@
             <p class="text-gray-500">Ingresa los datos de la cotización.</p>
         </div>
 
+        <div class="flex items-center justify-end mt-4">
+            <!-- Paso 1 -->
+            <div class="relative flex items-center">
+                <div
+                    class="w-10 h-10 rounded-full flex items-center justify-center
+                        {{ $step == 1 ? 'bg-gray-800' : 'bg-slate-400' }}
+                ">
+                    <span class="text-white text-xl font-bold">1</span>
+                </div>
+            </div>
+
+            <!-- Línea conectora 1-2 -->
+            <div class="h-0.5 w-12 bg-gray-300"></div>
+
+            <!-- Paso 2  -->
+            <div class="relative flex items-center">
+                <div
+                    class="w-10 h-10 rounded-full flex items-center justify-center
+                        {{ $step == 2 ? 'bg-gray-800' : 'bg-slate-400' }}
+                ">
+                    <span class="text-white text-xl font-bold">2</span>
+                </div>
+            </div>
+
+            <!-- Línea conectora 2-3 -->
+            <div class="h-0.5 w-12 bg-gray-300"></div>
+
+            <!-- Paso 3 -->
+            <div class="relative flex items-center">
+                <div
+                    class="w-10 h-10 rounded-full flex items-center justify-center
+                        {{ $step == 3 ? 'bg-gray-800' : 'bg-slate-400' }}
+                ">
+                    <span class="text-white text-xl font-bold">3</span>
+                </div>
+            </div>
+
+            <!-- Línea conectora 3-4 -->
+            <div class="h-0.5 w-12 bg-gray-300"></div>
+
+            <!-- Paso 4 -->
+            <div class="relative flex items-center">
+                <div
+                    class="w-10 h-10 rounded-full flex items-center justify-center
+                        {{ $step == 4 ? 'bg-gray-800' : 'bg-slate-400' }}
+                ">
+                    <span class="text-white text-xl font-bold">4</span>
+                </div>
+            </div>
+
+        </div>
         <div class="px-6 py-10 bg-white mt-6 rounded-2xl">
 
             @if ($step === 1)
-                <div class="mb-8">
-                    <h2 class="text-xl font-semibold mb-1">Selecciona el servicio a cotizar</h2>
-                    <p class="text-sm text-gray-500">A continuacion, sigue los pasos para realizar una cotización.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @foreach ($services as $service)
-                        <div class="rounded-2xl p-4 cursor-pointer
-               {{ $selectedService === $service->id ? 'ring-2 ring-primary' : '' }}"
-                            wire:click="$set('selectedService', {{ $service->id }})">
-                            <div class="flex items-center gap-4 mb-6">
-                                <img src="{{ asset('img/img1.webp') }}" class="w-24 h-24 rounded-full object-cover">
-                                <h3 class="text-lg font-bold">{{ $service->name }}</h3>
-                            </div>
+                <x-vendor.quotes.select-service :services="$services" :selectedService="$selectedService" />
+            @endif
 
-                            {{-- se muestran los colores solo para el servicio actualmente seleccionado --}}
-                            @if ($selectedService === $service->id)
-                                <flux:radio.group wire:model="selectedColor.{{ $service->id }}"
-                                    label="Selecciona un color…">
-                                    <flux:radio value="azul" label="Azul" />
-                                    <flux:radio value="negro" label="Negro" />
-                                    <flux:radio value="blanco" label="Blanco" />
-                                </flux:radio.group>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-
-                <div class="mt-10 text-right">
-                    <flux:button wire:click="irPasoSiguiente">Siguiente</flux:button>
-                </div>
-        </div>
-
-        @endif
-
-        @if ($step === 2)
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                @foreach ($variants as $variant)
-                    <div class="rounded p-4 cursor-pointer shadow transition-all duration-300
-                    {{ $selectedVariant === $variant->id ? 'ring-2 ring-primary bg-gray-50' : 'hover:ring-1 hover:ring-gray-300' }}"
-                        wire:click="$set('selectedVariant', {{ $variant->id }})">
-                        <h3 class="text-lg font-bold">
-                            {{ $variant->service->name }}
-                            <span class="text-sm text-gray-500">{{ $variant->name }}</span>
-                        </h3>
-
-                        @if ($selectedVariant === $variant->id)
-                            <div class="mt-4">
-                                <flux:radio.group wire:model="selectedCuadricula" label="Selecciona">
-                                    <flux:radio value="cuadricula" label="Cuadrícula" />
-                                    <flux:radio value="cuadricula_trama" label="Cuadrícula con trama" />
-                                    <flux:radio value="sin_cuadricula" label="Sin Cuadrícula" />
-                                </flux:radio.group>
-                            </div>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-
-            <div class="mt-6 text-right">
-                <flux:button wire:click="irPasoSiguiente">Continuar</flux:button>
-            </div>
-        @endif
+            @if ($step === 2)
+                <x-vendor.quotes.select-service-variant :variants="$variants" :selectedVariant="$selectedVariant" />
+            @endif
 
 
-        @if ($step === 3)
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-                <!-- FORMULARIO -->
-                <div class="md:col-span-2 bg-white p-6 rounded-xl shadow">
-                    <h2 class="text-xl font-bold mb-1">Ingresa la información en los siguientes campos</h2>
-                    <p class="text-sm text-gray-500 mb-6">lorem ipsum lorem ipsum lorem ipsum</p>
+            @if ($step === 3)
+                <x-vendor.quotes.calculator-form-service 
+                :clients="$clients" 
+                :selectedCuadricula="$selectedCuadricula" 
+                :available_services="$available_services"
+                :available_variants="$available_variants" 
+                :pvp="$pvp" 
+                :iva="$iva" 
+                :total="$total" 
+                :added_services="$added_services" 
+                :activeServiceIndex="$activeServiceIndex"
+                :selectorColorVisible="$selectorColorVisible"
+                :servicioSelectorColor="$servicioSelectorColor"
+                :indiceSelectorColor="$indiceSelectorColor"
+                :selectedColor="$selectedColor"
+                :inputsPorServicio="$inputsPorServicio" />
+            @endif
 
-                    <!-- CLIENTE -->
-                    <div class="mb-6">
-                        <label class="block mb-2 text-sm font-medium">Selecciona un cliente *</label>
-                        <flux:select wire:model="clienteId" placeholder="Selecciona al cliente">
-                            <flux:select.option value="">Selecciona</flux:select.option>
-                            @foreach ($clients as $client)
-                                <flux:select.option value="{{ $client->id }}">{{ $client->name }}
-                                </flux:select.option>
-                            @endforeach
-                        </flux:select>
-                    </div>
+            @if ($step === 4)
+                <x-vendor.quotes.generate-pdf-files :pdfs_generados="$pdfs_generados" />
+            @endif
 
-                    <!-- DATOS DE LA PÉRGOLA -->
-                    <div>
-                        <div>
-                            <h3 class="font-semibold text-sm mb-4">Ingresa la información de la pérgola.</h3>
-                            <div class="grid grid-cols-2 gap-4 max-w-xs">
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Medida A</label>
-                                    <input type="text" wire:model="medidaA"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Medida B</label>
-                                    <input type="text" wire:model="medidaB"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Alto</label>
-                                    <input type="text" wire:model="alto"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Columnas</label>
-                                    <input type="text" wire:model="n_columnas"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Bajantes</label>
-                                    <input type="text" wire:model="n_bajantes"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Anillos</label>
-                                    <input type="text" wire:model="anillos"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- DATOS DE LA CUADRICULA -->
-
-                    @if ($selectedCuadricula === 'cuadricula')
-                        <flux:separator class="my-8" />
-
-                        <div class="mt-6">
-                            <h3 class="font-semibold text-sm mb-4">Ingresa la información de la cuadricula.</h3>
-                            <div class="grid grid-cols-2 gap-4 max-w-xs">
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Medida A</label>
-                                    <input type="text" wire:model="medidaACuadricula"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Medida B</label>
-                                    <input type="text" wire:model="medidaBCuadricula"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Distancia Palillaje</label>
-                                    <input type="text" wire:model="distanciaPalillajeCuadricula"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Alto</label>
-                                    <input type="text" wire:model="altoCuadricula"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <div class="mt-6">
-                            <h3 class="font-semibold text-sm mb-4">Ingresa la información de la cuadricula trama.</h3>
-                            <div class="grid grid-cols-2 gap-4 max-w-xs">
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Medida A</label>
-                                    <input type="text" wire:model="medidaACuadriculaTrama"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Medida B</label>
-                                    <input type="text" wire:model="medidaBCuadriculaTrama"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Distancia Palillaje</label>
-                                    <input type="text" wire:model="distanciaPalillajeCuadriculaTrama"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Alto</label>
-                                    <input type="text" wire:model="altoCuadriculaTrama"
-                                        class="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                                </div>
-                            </div>
+            <!-- Modal para agregar otro servicio -->
+            <flux:modal name="add-service-modal" class="min-w-[28rem]">
+                <div class="px-6 py-10 bg-white rounded-xl">
+                    <!-- Indicador de pasos interno opcional -->
+                    @if ($newServiceStep === 1)
+                        <x-vendor.quotes.modals.select-service :services="$services" :selectedService="$selectedService" />
+                        <div class="flex justify-end mt-6 sticky bottom-0">
+                            <flux:button wire:click="newServiceNextStep" variant="primary">Siguiente</flux:button>
                         </div>
                     @endif
 
-
-                    <div class="flex justify-end gap-4">
-                        <div class="mt-4">
-                            <a href="#" class="text-primary text-sm font-medium">+ agregar otro servicio</a>
+                    @if ($newServiceStep === 2)
+                        <x-vendor.quotes.modals.select-service-variant :variants="$variants" :selectedVariant="$selectedVariant" />
+                        <div class="flex justify-between sticky bottom-0 bg-white p-6">
+                            <flux:button wire:click="$set('newServiceStep', 1)" variant="ghost">Atrás</flux:button>
+                            <flux:button wire:click="confirmAddService" variant="primary">Agregar servicio</flux:button>
                         </div>
-
-                        <div class="mt-6">
-                            <flux:button variant='primary' wire:click="calcularTotal">Calcular</flux:button>
-                        </div>
-                    </div>
-
-
+                    @endif
                 </div>
+            </flux:modal>
 
-                <!-- RESUMEN -->
-                <div class="bg-white p-6 rounded-xl shadow">
-                    <h3 class="text-lg font-bold mb-4">Resumen</h3>
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-sm">
-                            <span>PVP</span>
-                            <span>${{ number_format($pvp, 2) }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span>IVA (15%)</span>
-                            <span>${{ number_format($iva, 2) }}</span>
-                        </div>
-                        <hr>
-                        <div class="flex justify-between text-base font-semibold">
-                            <span>Total</span>
-                            <span>${{ number_format($total, 2) }}</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 text-right">
-                        <flux:button icon="arrow-right" wire:click="finalizar">Finalizar</flux:button>
-                    </div>
-                </div>
-            </div>
-        @endif
-
+        </div>
     </div>
-</div>
