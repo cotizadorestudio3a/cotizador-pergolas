@@ -64,9 +64,18 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+    
     public function clients()
     {
         return $this->belongsToMany(Client::class, 'client_user', 'user_id', 'client_id');
+    }
+
+    /**
+     * Relación con las cotizaciones creadas por el usuario
+     */
+    public function quotations()
+    {
+        return $this->hasMany(Quotation::class);
     }
 
     // determine user role name
