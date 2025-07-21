@@ -129,4 +129,36 @@ class QuotationService
             ->orderBy('created_at', 'desc')
             ->get();
     }
+
+    /**
+     * Obtiene una cotización específica con sus relaciones
+     */
+    public function getQuotationDetails(int $quotationId, int $userId): ?Quotation
+    {
+        return Quotation::with([
+            'client',
+            'quotationItems.service',
+            'quotationItems.serviceVariant'
+        ])
+        ->where('user_id', $userId)
+        ->find($quotationId);
+    }
+
+    /**
+     * Obtiene estadísticas de cotizaciones para un usuario
+     */
+    public function getUserQuotationStats(int $userId): array
+    {
+        $quotations = Quotation::where('user_id', $userId);
+        
+        return [
+            'total_count' => $quotations->count(),
+            'total_amount' => $quotations->sum('total'),
+            'average_amount' => $quotations->avg('total'),
+            'this_month_count' => $quotations->whereMonth('created_at', now()->month)
+                                            ->whereYear('created_at', now()->year)
+                                            ->count(),
+            'this_year_count' => $quotations->whereYear('created_at', now()->year)->count(),
+        ];
+    }
 }

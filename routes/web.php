@@ -59,6 +59,11 @@ Route::middleware(['vendor-role'])->prefix('vendor')->name('vendor.')->group(fun
         //Route::get('/create', Create::class)->name('create');
     });
 
+    // Quotations (Cotizaciones guardadas)
+    Route::prefix('quotations')->name('quotations.')->group( function() {
+        Route::get('/', \App\Livewire\Vendor\Quotations\Index::class)->name('index');
+    });
+
 });
 
 require __DIR__ . '/auth.php';

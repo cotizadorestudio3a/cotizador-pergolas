@@ -64,7 +64,7 @@
         </div>
 
 
-        <!-- Lista de Materiales -->
+        <!-- Cotizacion del cliente -->
         <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-md transition-shadow duration-300">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-3">
@@ -75,8 +75,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-800">Lista de Materiales</h2>
-                        <p class="text-sm text-gray-600">Inventario y especificaciones</p>
+                        <h2 class="text-xl font-semibold text-gray-800">Cotizacion del cliente</h2>
+                        <p class="text-sm text-gray-600">Información general de la cotización</p>
                     </div>
                 </div>
             </div>
