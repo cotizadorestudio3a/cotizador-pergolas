@@ -9,6 +9,7 @@ use App\Services\Quotes\QuoteInputValidator;
 use App\Services\Quotes\QuotePDFGenerator;
 use App\Services\Quotes\QuoteServiceManager;
 use App\Services\Quotes\ColumnColorManager;
+use App\Services\Quotes\QuotationService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,6 +49,9 @@ class Index extends Component
     // PDFs generados
     public array $pdfs_generados = [];
     
+    // Cotización guardada
+    public $saved_quotation_id = null;
+    
     // Selector de color de columnas
     public bool $selectorColorVisible = false;
     public ?int $servicioSelectorColor = null;
@@ -59,6 +63,7 @@ class Index extends Component
     private QuotePDFGenerator $pdfGenerator;
     private QuoteServiceManager $serviceManager;
     private ColumnColorManager $colorManager;
+    private QuotationService $quotationService;
 
     public function boot()
     {
@@ -67,6 +72,7 @@ class Index extends Component
         $this->pdfGenerator = app(QuotePDFGenerator::class);
         $this->serviceManager = app(QuoteServiceManager::class);
         $this->colorManager = app(ColumnColorManager::class);
+        $this->quotationService = app(QuotationService::class);
     }
 
     // ==========================================
@@ -142,7 +148,7 @@ class Index extends Component
     {
         // Validar requisitos usando el servicio
         $validationErrors = $this->calculator->validateCalculationRequirements($this->client_id, $this->added_services);
-        
+
         if (!empty($validationErrors)) {
             foreach ($validationErrors as $field => $message) {
                 $this->addError($field, $message);
@@ -193,15 +199,82 @@ class Index extends Component
     public function generatePDFFiles()
     {
         try {
+            // Validar que tengamos toda la información necesaria
+            $validationErrors = $this->validateQuotationData();
+
+            if (!empty($validationErrors)) {
+                foreach ($validationErrors as $field => $message) {
+                    $this->addError($field, $message);
+                }
+                return;
+            }
+
+            // Guardar la cotización en la base de datos
+            $quotation = $this->saveQuotationToDatabase();
+        
+            // Generar los PDFs
             $this->pdfs_generados = $this->pdfGenerator->generateAllPDFs(
                 $this->added_services, 
                 $this->inputsPorServicio
             );
 
             $this->step = 4;
+            
+            // Dispatch evento de cotización guardada exitosamente
+            $this->dispatch('cotizacionGuardada', [
+                'quotation_id' => $quotation->id,
+                'message' => 'Cotización guardada exitosamente'
+            ]);
+            
         } catch (\Exception $e) {
-            $this->addError('pdf_generation', 'Error al generar PDFs: ' . $e->getMessage());
+            $this->addError('pdf_generation', 'Error al procesar la cotización: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Valida los datos necesarios para crear una cotización
+     */
+    private function validateQuotationData(): array
+    {
+        $errors = [];
+
+        if (empty($this->client_id)) {
+            $errors['client_id'] = 'Debe seleccionar un cliente';
+        }
+
+        if (empty($this->added_services)) {
+            $errors['services'] = 'Debe agregar al menos un servicio';
+        }
+
+        if ($this->total <= 0) {
+            $errors['total'] = 'Debe calcular el total antes de finalizar';
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Guarda la cotización en la base de datos
+     */
+    private function saveQuotationToDatabase()
+    {
+        $quotationData = [
+            'client_id' => $this->client_id,
+            'user_id' => Auth::id(),
+            'total' => $this->total,
+            'iva' => $this->iva,
+            'pvp' => $this->pvp,
+        ];
+
+        $quotation = $this->quotationService->createQuotation(
+            $quotationData,
+            $this->added_services,
+            $this->inputsPorServicio
+        );
+
+        $this->saved_quotation_id = $quotation->id;
+
+        return $quotation;
     }
 
     public function decrementStep()
@@ -343,6 +416,50 @@ class Index extends Component
     }
 
     // ==========================================
+    // MÉTODOS DE GESTIÓN DE COTIZACIONES GUARDADAS
+    // ==========================================
+
+    /**
+     * Obtiene las cotizaciones del usuario actual
+     */
+    public function getUserQuotations()
+    {
+        return $this->quotationService->getUserQuotations(Auth::id());
+    }
+
+    /**
+     * Obtiene las cotizaciones de un cliente específico
+     */
+    public function getClientQuotations(int $clientId)
+    {
+        return $this->quotationService->getClientQuotations($clientId);
+    }
+
+    /**
+     * Reinicia el formulario para crear una nueva cotización
+     */
+    public function startNewQuotation()
+    {
+        $this->reset([
+            'step',
+            'selectedService',
+            'selectedColor',
+            'selectedVariant', 
+            'selectedCuadricula',
+            'client_id',
+            'added_services',
+            'inputsPorServicio',
+            'pvp',
+            'iva',
+            'total',
+            'pdfs_generados',
+            'saved_quotation_id'
+        ]);
+        
+        $this->step = 1;
+    }
+
+    // ==========================================
     // MÉTODOS DE INICIALIZACIÓN Y RENDERIZADO
     // ==========================================
     
@@ -361,5 +478,28 @@ class Index extends Component
         $added_services = $this->added_services;
         
         return view('livewire.vendor.quotes.index', compact('services', 'variants', 'clients', 'added_services'));
+    }
+
+    // ==========================================
+    // MÉTODOS DE DEBUG (TEMPORALES)
+    // ==========================================
+
+    /**
+     * Método temporal para debug - inspecciona los inputs de cuadrícula
+     */
+    public function debugInputs()
+    {
+        dd([
+            'added_services' => $this->added_services,
+            'inputsPorServicio' => $this->inputsPorServicio,
+            'cuadricula_fields' => collect($this->inputsPorServicio)->map(function($inputs, $index) {
+                return [
+                    'index' => $index,
+                    'medidaACuadricula' => $inputs['medidaACuadricula'] ?? null,
+                    'medidaBCuadricula' => $inputs['medidaBCuadricula'] ?? null,
+                    'altoCuadricula' => $inputs['altoCuadricula'] ?? null,
+                ];
+            })->toArray()
+        ]);
     }
 }

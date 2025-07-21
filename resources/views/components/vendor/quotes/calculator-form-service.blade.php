@@ -129,7 +129,13 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end mt-6">
+                <div class="flex justify-end mt-6 space-x-2">
+                    <!-- Botón temporal de debug -->
+                    <flux:button variant='ghost' wire:click="debugInputs"
+                        class="text-sm">
+                        Debug Inputs
+                    </flux:button>
+                    
                     <flux:button variant='primary' wire:click="calcularTotal"
                         class="transition-all duration-200 hover:shadow-sm">
                         Calcular

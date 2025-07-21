@@ -9,18 +9,18 @@
     </h3>
     <div class="grid grid-cols-2 gap-4 max-w-xs">
         <div>
-            <label class="block text-sm font-medium mb-1 text-gray-900">Medida A</label>
-            <input type="number" wire:model="inputsPorServicio.{{ $index }}.medidaA"
+            <label class="block text-sm font-medium mb-1 text-gray-900">Medida A Cuadrícula</label>
+            <input type="number" wire:model="inputsPorServicio.{{ $index }}.medidaACuadricula"
                 class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200">
-            @error('inputsPorServicio.{{ $index }}.medidaA')
+            @error('inputsPorServicio.{{ $index }}.medidaACuadricula')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
         <div>
-            <label class="block text-sm font-medium mb-1 text-gray-900">Medida B</label>
-            <input type="number" wire:model="inputsPorServicio.{{ $index }}.medidaB"
+            <label class="block text-sm font-medium mb-1 text-gray-900">Medida B Cuadrícula</label>
+            <input type="number" wire:model="inputsPorServicio.{{ $index }}.medidaBCuadricula"
                 class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200">
-            @error('inputsPorServicio.{{ $index }}.medidaB')
+            @error('inputsPorServicio.{{ $index }}.medidaBCuadricula')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
@@ -33,10 +33,10 @@
             @enderror
         </div>
         <div>
-            <label class="block text-sm font-medium mb-1 text-gray-900">Alto</label>
-            <input type="number" wire:model="inputsPorServicio.{{ $index }}.alto"
+            <label class="block text-sm font-medium mb-1 text-gray-900">Alto Cuadrícula</label>
+            <input type="number" wire:model="inputsPorServicio.{{ $index }}.altoCuadricula"
                 class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200">
-            @error('inputsPorServicio.{{ $index }}.alto')
+            @error('inputsPorServicio.{{ $index }}.altoCuadricula')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>

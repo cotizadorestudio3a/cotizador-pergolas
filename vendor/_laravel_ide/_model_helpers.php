@@ -322,10 +322,26 @@ namespace App\Models {
     /**
      * App\Models\Quotation
      *
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property decimal:2 $pvp
+     * @property decimal:2 $iva
+     * @property decimal:2 $total
+     * @property int $user_id
+     * @property int $client_id
+     * @property int $id
      * @property-read \App\Models\Client $client
      * @property-read \App\Models\User $user
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\QuotationItem> $quotationItems
      * @property-read int|null $quotationItems_count
+     * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereClientId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereUserId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereTotal($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereIva($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation wherePvp($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation query()
@@ -625,9 +641,23 @@ namespace App\Models {
     /**
      * App\Models\QuotationItem
      *
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property decimal:2 $calculated_price
+     * @property int $service_variant_id
+     * @property int $service_id
+     * @property int $quotation_id
+     * @property int $id
      * @property-read \App\Models\Quotation $quotation
      * @property-read \App\Models\Services $service
      * @property-read \App\Models\ServiceVariants $serviceVariant
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereQuotationId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereServiceId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereServiceVariantId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereCalculatedPrice($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem query()
