@@ -138,15 +138,17 @@ class PergolaVidrio extends PergolaBase
     public $iva_total;
     public $total;
 
+    public $quotation_id;
+
     public function __construct(array $data)
     {
         parent::__construct($data);
-        $this->medidaA = $data['medidaA'];
-        $this->medidaB = $data['medidaB'];
-        $this->alto = $data['alto'];
-        $this->n_columnas = $data['n_columnas'];
-        $this->n_bajantes = $data['n_bajantes'];
-        $this->anillos = $data['anillos'];
+        $this->medidaA = max(0.1, (float)($data['medidaA'] ?? 0.1));
+        $this->medidaB = max(0.1, (float)($data['medidaB'] ?? 0.1));
+        $this->alto = max(0.1, (float)($data['alto'] ?? 0.1));
+        $this->n_columnas = max(1, (int)($data['n_columnas'] ?? 1));
+        $this->n_bajantes = max(1, (int)($data['n_bajantes'] ?? 1));
+        $this->anillos = max(0, (int)($data['anillos'] ?? 0));
     }
 
     public function calcular(): array
@@ -173,8 +175,8 @@ class PergolaVidrio extends PergolaBase
         $this->largoVigas = $menor;
         $this->largoVigaPrincipal = $mayor;
         $this->area = $this->medidaA * $this->medidaB;
-        $this->tiempoDias = $this->area / 1.8;
-        $this->tiempoMeses = $this->tiempoDias / 30;
+        $this->tiempoDias = $this->area > 0 ? $this->area / 1.8 : 0;
+        $this->tiempoMeses = $this->tiempoDias > 0 ? $this->tiempoDias / 30 : 0;
 
         $this->aumento_desperdicio_vigas = ($this->largoVigas > 4 && $this->largoVigas < 6.4)
             ? -$this->largoVigas + 6.4 : 0;
@@ -271,7 +273,7 @@ class PergolaVidrio extends PergolaBase
         $this->precio_codo_pvc_90_3 = 4;
         $this->precio_calipega = 3;
         $this->precio_plastico_negro = 0.58;
-        $this->precio_pergola = ($this->cantidad_pergola < 10) ? (180 / $this->cantidad_pergola) : 18;
+        $this->precio_pergola = ($this->cantidad_pergola > 0 && $this->cantidad_pergola < 10) ? (180 / $this->cantidad_pergola) : 18;
         $this->precio_columnas = 5;
         $this->precio_n_bajantes = 10;
         $this->precio_aluco_bond = 10;
@@ -421,13 +423,149 @@ class PergolaVidrio extends PergolaBase
     }
 
 
-
-
     public function obtenerPDFCotizacion(): string
     {
-        // Aquí deberías generar un PDF con el resumen comercial
-        // usando DomPDF, Barryvdh, Snappy, etc.
-        return 'ruta/a/pdf_cotizacion.pdf';
+        $this->quotation_id = $this->data['quotation_id'] ?? 'COT-' . now()->timestamp;
+
+        // Si tenemos información de todos los servicios (PDF consolidado)
+        if (isset($this->data['all_services']) && !empty($this->data['all_services'])) {
+            $servicios = $this->processAllServicesForPDF($this->data['all_services']);
+        } else {
+            // Fallback: Procesar solo el servicio actual (compatibilidad)
+            $servicios = $this->processSingleServiceForPDF();
+        }
+
+        $data = [
+            'numero_cotizacion' => $this->data['quotation_id'] ?? 'COT-' . now()->timestamp,
+            'cliente' => [
+                'nombre' => $this->data['client_name'] ?? 'Cliente',
+                'dni' => $this->data['client_dni'] ?? '',
+                'telefono' => $this->data['client_phone'] ?? '',
+                'provincia' => $this->data['client_province'] ?? ''
+            ],
+            'servicios' => $servicios,
+            'resumen_financiero' => [
+                'pvp' => $this->data['pvp'] ?? $this->pvp_pergola,
+                'iva' => $this->data['iva'] ?? ($this->pvp_pergola * 0.15),
+                'total' => $this->data['total'] ?? ($this->pvp_pergola * 1.15)
+            ],
+            'fecha_emision' => now()->format('d/m/Y'),
+            'vigencia' => now()->addDays(30)->format('d/m/Y')
+        ];
+
+        $pdf = Pdf::loadView('pdfs.cotizacion', $data);
+        $path = 'pdf/cotizacion_' . now()->timestamp . '.pdf';
+        $pdf->save(storage_path('app/public/' . $path));
+        
+        return $path;
+    }
+
+    /**
+     * Procesa todos los servicios para el PDF consolidado
+     */
+    private function processAllServicesForPDF(array $allServices): array
+    {
+        $servicios = [];
+
+        foreach ($allServices as $service) {
+            $inputs = $service['inputs'];
+            
+            // Obtener nombre de la variante
+            $variantName = 'Vidrio'; // Valor por defecto
+            if (isset($service['variant_id'])) {
+                $variant = \App\Models\ServiceVariants::find($service['variant_id']);
+                $variantName = $variant ? $variant->name : 'Vidrio';
+            }
+
+            // Calcular pérgola
+            $pergola = new static($inputs);
+            $pergola->calcular();
+            $pergolaPrecio = $pergola->pvp_pergola;
+
+            // Agregar servicio de pérgola
+            $servicios[] = [
+                'tipo' => 'Pergola de ' . $variantName,
+                'medidas' => [
+                    'medidaA' => $inputs['medidaA'] ?? 0,
+                    'medidaB' => $inputs['medidaB'] ?? 0,
+                    'alto' => $inputs['alto'] ?? 0,
+                    'area' => ($inputs['medidaA'] ?? 0) * ($inputs['medidaB'] ?? 0),
+                ],
+                'precio' => $pergolaPrecio
+            ];
+
+            // Agregar cuadrícula si aplica
+            if (!empty($service['selected_cuadricula']) && $service['selected_cuadricula'] !== 'ninguna') {
+                $cuadriculaTipo = ucfirst(str_replace('_', ' ', $service['selected_cuadricula']));
+                
+                $medidaACuad = $inputs['medidaACuadricula'] ?? $inputs['medidaACuadriculaTrama'] ?? 0;
+                $medidaBCuad = $inputs['medidaBCuadricula'] ?? $inputs['medidaBCuadriculaTrama'] ?? 0;
+                $altoCuad = $inputs['altoCuadricula'] ?? $inputs['altoCuadriculaTrama'] ?? 0;
+                
+                $servicios[] = [
+                    'tipo' => $cuadriculaTipo,
+                    'medidas' => [
+                        'medidaA' => $medidaACuad,
+                        'medidaB' => $medidaBCuad,
+                        'alto' => $altoCuad,
+                        'area' => $medidaACuad * $medidaBCuad,
+                    ],
+                    'precio' => 0 // Se incluye en el precio de la pérgola
+                ];
+            }
+        }
+
+        return $servicios;
+    }
+
+    /**
+     * Procesa un solo servicio para el PDF (compatibilidad)
+     */
+    private function processSingleServiceForPDF(): array
+    {
+        // Obtener nombre de la variante
+        $variantName = 'Vidrio'; // Valor por defecto
+        if (isset($this->data['variant_id'])) {
+            $variant = \App\Models\ServiceVariants::find($this->data['variant_id']);
+            $variantName = $variant ? $variant->name : 'Vidrio';
+        }
+
+        // Preparar servicios cotizados
+        $servicios = [
+            [
+                'tipo' => 'Pergola de ' . $variantName,
+                'medidas' => [
+                    'medidaA' => $this->medidaA,
+                    'medidaB' => $this->medidaB,
+                    'alto' => $this->alto,
+                    'area' => $this->area,
+                ],
+                'precio' => $this->pvp_pergola
+            ]
+        ];
+
+        // Agregar cuadrícula si fue seleccionada
+        if (!empty($this->data['selected_cuadricula']) && $this->data['selected_cuadricula'] !== 'ninguna') {
+            $cuadriculaTipo = ucfirst(str_replace('_', ' ', $this->data['selected_cuadricula']));
+            
+            // Obtener medidas de cuadrícula
+            $medidaACuad = $this->data['medidaACuadricula'] ?? $this->medidaACuadriculaTrama ?? 0;
+            $medidaBCuad = $this->data['medidaBCuadricula'] ?? $this->medidaBCuadriculaTrama ?? 0;
+            $altoCuad = $this->data['altoCuadricula'] ?? $this->altoCuadriculaTrama ?? 0;
+            
+            $servicios[] = [
+                'tipo' => $cuadriculaTipo,
+                'medidas' => [
+                    'medidaA' => $medidaACuad,
+                    'medidaB' => $medidaBCuad,
+                    'alto' => $altoCuad,
+                    'area' => $medidaACuad * $medidaBCuad,
+                ],
+                'precio' => 0 // Se incluirá en el precio total de la pérgola
+            ];
+        }
+
+        return $servicios;
     }
 
     public function obtenerPDFOrdenProduccion(): string
@@ -447,7 +585,10 @@ class PergolaVidrio extends PergolaBase
             ], 
             'titulo' => [
                 'titulo_servicio' => 'Pergola de Vidrio'
-            ]
+            ],
+            'numero_cotizacion' => $this->data['quotation_id'] ?? 'COT-' . now()->timestamp,
+            'fecha_emision' => now()->format('d/m/Y'),
+            'vigencia' => now()->addDays(30)->format('d/m/Y')
         ];
 
         $pdf = Pdf::loadView('pdfs.orden-produccion', $data);

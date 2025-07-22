@@ -41,6 +41,9 @@ class QuoteCalculator
         ];
     }
 
+    /**
+     * Valida los requisitos mínimos para realizar un cálculo
+     */
     public function validateCalculationRequirements(?int $clientId, array $services): array
     {
         $errors = [];

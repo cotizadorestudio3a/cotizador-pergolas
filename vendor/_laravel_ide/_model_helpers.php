@@ -334,6 +334,8 @@ namespace App\Models {
      * @property-read \App\Models\User $user
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\QuotationItem> $quotationItems
      * @property-read int|null $quotationItems_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\QuotationItem> $items
+     * @property-read int|null $items_count
      * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereClientId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Quotation>|Quotation whereUserId($value)
@@ -643,6 +645,10 @@ namespace App\Models {
      *
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
+     * @property decimal:2|null $total
+     * @property array|null $inputs
+     * @property string|null $cuadricula_type
+     * @property string|null $color
      * @property decimal:2 $calculated_price
      * @property int $service_variant_id
      * @property int $service_id
@@ -656,6 +662,10 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereServiceId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereServiceVariantId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereCalculatedPrice($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereColor($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereCuadriculaType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereInputs($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereTotal($value)
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<QuotationItem>|QuotationItem newModelQuery()

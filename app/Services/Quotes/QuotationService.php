@@ -50,8 +50,12 @@ class QuotationService
         return QuotationItem::create([
             'quotation_id' => $quotation->id,
             'service_id' => $service['service_id'],
-            'service_variant_id' => $service['variant_id'],
+            'service_variant_id' => $service['selected_variant'] ?? $service['variant_id'] ?? null,
             'calculated_price' => $calculatedPrice,
+            'color' => $service['selected_color'] ?? null,
+            'cuadricula_type' => $service['selected_cuadricula'] ?? null,
+            'inputs' => $inputs,
+            'total' => $calculatedPrice, // Por ahora, igual al calculated_price
         ]);
     }
 

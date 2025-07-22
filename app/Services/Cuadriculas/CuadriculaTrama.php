@@ -78,7 +78,8 @@ class CuadriculaTrama extends CuadriculaBase
 
     private function calcularDimensionesCuadricula()
     {
-        $this->numero_cuadriculas = ceil(min($this->medidaACuadricula, $this->medidaBCuadricula) / $this->distanciaPalillajeCuadricula) + 1;
+        $distancia = $this->distanciaPalillajeCuadricula > 0 ? $this->distanciaPalillajeCuadricula : 0.1;
+        $this->numero_cuadriculas = ceil(min($this->medidaACuadricula, $this->medidaBCuadricula) / $distancia) + 1;
         $this->largo_cuadriculas = max($this->medidaACuadricula, $this->medidaBCuadricula);
         $this->vigas_cubierta_cuadricula = ceil(max($this->medidaACuadricula, $this->medidaBCuadricula) / 0.55) + 1;
         $this->largo_vigas_cuadricula = ceil(min($this->medidaBCuadricula, $this->distanciaPalillajeCuadricula) / 0.55) + 1;

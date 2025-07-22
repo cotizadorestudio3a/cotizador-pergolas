@@ -42,6 +42,11 @@ Route::middleware(['admin-role'])->prefix('admin')->name('admin.')->group(functi
         Route::get('/', \App\Livewire\Admin\VendorClients\Index::class)->name('index');
         Route::get('/vendedores/{vendedor}/asignar-clientes', Assign::class)->name('create');
     });
+
+    // Cotizaciones (Administración general)
+    Route::prefix('quotations')->name('quotations.')->group( function() {
+        Route::get('/', \App\Livewire\Admin\Quotations\Index::class)->name('index');
+    });
 });
 
 Route::middleware(['vendor-role'])->prefix('vendor')->name('vendor.')->group(function () {

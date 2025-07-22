@@ -48,4 +48,12 @@ class Quotation extends Model
     {
         return $this->hasMany(QuotationItem::class);
     }
+
+    /**
+     * Alias para quotationItems (para compatibilidad)
+     */
+    public function items(): HasMany
+    {
+        return $this->quotationItems();
+    }
 }

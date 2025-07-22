@@ -12,6 +12,7 @@ use App\Services\Quotes\ColumnColorManager;
 use App\Services\Quotes\QuotationService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Index extends Component
 {
@@ -140,6 +141,34 @@ class Index extends Component
         );
     }
 
+    /**
+     * Elimina un servicio específico de la lista
+     */
+    public function removeService(int $serviceIndex): void
+    {
+        if (!isset($this->added_services[$serviceIndex])) {
+            return;
+        }
+
+        // Eliminar el servicio y sus inputs
+        unset($this->added_services[$serviceIndex]);
+        unset($this->inputsPorServicio[$serviceIndex]);
+
+        // Reindexar los arrays para mantener índices consecutivos
+        $this->added_services = array_values($this->added_services);
+        $this->inputsPorServicio = array_values($this->inputsPorServicio);
+
+        // Ajustar el activeServiceIndex si es necesario
+        if ($this->activeServiceIndex >= count($this->added_services)) {
+            $this->activeServiceIndex = max(0, count($this->added_services) - 1);
+        }
+
+        // Resetear totales después de eliminar
+        $this->pvp = 0;
+        $this->iva = 0;
+        $this->total = 0;
+    }
+
     // ==========================================
     // MÉTODOS DE CÁLCULOS
     // ==========================================
@@ -191,7 +220,6 @@ class Index extends Component
         }
     }
 
-
     // ==========================================
     // MÉTODOS DE GENERACIÓN DE PDF
     // ==========================================
@@ -208,14 +236,15 @@ class Index extends Component
                 }
                 return;
             }
-
+            
             // Guardar la cotización en la base de datos
             $quotation = $this->saveQuotationToDatabase();
         
             // Generar los PDFs
             $this->pdfs_generados = $this->pdfGenerator->generateAllPDFs(
                 $this->added_services, 
-                $this->inputsPorServicio
+                $this->inputsPorServicio,
+                $quotation
             );
 
             $this->step = 4;
@@ -485,21 +514,18 @@ class Index extends Component
     // ==========================================
 
     /**
-     * Método temporal para debug - inspecciona los inputs de cuadrícula
+     * Método temporal de debug para verificar datos
      */
     public function debugInputs()
     {
-        dd([
-            'added_services' => $this->added_services,
-            'inputsPorServicio' => $this->inputsPorServicio,
-            'cuadricula_fields' => collect($this->inputsPorServicio)->map(function($inputs, $index) {
-                return [
-                    'index' => $index,
-                    'medidaACuadricula' => $inputs['medidaACuadricula'] ?? null,
-                    'medidaBCuadricula' => $inputs['medidaBCuadricula'] ?? null,
-                    'altoCuadricula' => $inputs['altoCuadricula'] ?? null,
-                ];
-            })->toArray()
+        Log::info('Debug serviceCosts:', $this->serviceCosts);
+        Log::info('Debug added_services:', $this->added_services);
+        Log::info('Debug inputsPorServicio:', $this->inputsPorServicio);
+        Log::info('Debug total values:', [
+            'pvp' => $this->pvp,
+            'iva' => $this->iva,
+            'total' => $this->total
         ]);
     }
+
 }

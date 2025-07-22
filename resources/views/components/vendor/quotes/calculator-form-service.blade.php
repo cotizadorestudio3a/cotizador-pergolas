@@ -47,12 +47,24 @@
                                 <span class="font-semibold text-gray-800">Servicio #{{ $index + 1 }}</span>
                                 <span class="text-sm text-gray-500 ml-2">({{ $servicio['selected_cuadricula'] }})</span>
                             </div>
-                            @if ($activeServiceIndex !== $index)
-                                <flux:button size="sm"
-                                    wire:click="$set('activeServiceIndex', {{ $index }})">
-                                    Editar
-                                </flux:button>
-                            @endif
+                            <div class="flex items-center space-x-2">
+                                @if ($activeServiceIndex !== $index)
+                                    <flux:button size="sm"
+                                        wire:click="$set('activeServiceIndex', {{ $index }})">
+                                        Editar
+                                    </flux:button>
+                                @endif
+                                
+                                @if(count($added_services) > 1)
+                                    <flux:button size="sm" variant="danger"
+                                        wire:click="removeService({{ $index }})"
+                                        wire:confirm="¿Estás seguro de que quieres eliminar este servicio?">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </flux:button>
+                                @endif
+                            </div>
                         </div>
 
                         @if ($activeServiceIndex === $index)
@@ -95,38 +107,48 @@
                                 'Desconocido';
                         @endphp
 
-                        <div class="flex items-center space-x-2 text-sm text-gray-600 mb-2">
-                            <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7"></path>
-                            </svg>
-
-                            <span class="font-medium">
-                                {{ $serviceName }} {{ $variantName }} {{ $servicio['selected_cuadricula'] }}
-                            </span>
+                        <div class="mb-3 p-3 bg-white rounded-lg border border-gray-200">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="font-medium text-sm text-gray-800">
+                                    {{ $serviceName }} - {{ $variantName }}
+                                </span>
+                            </div>
+                            
+                            <div class="text-xs text-gray-500 mt-1">
+                                <span>{{ ucfirst(str_replace('_', ' ', $servicio['selected_cuadricula'])) }}</span>
+                            </div>
                         </div>
                     @empty
                         <p class="text-sm text-gray-500">No se ha agregado ningún servicio.</p>
                     @endforelse
                 </div>
 
-
                 <!-- Cálculos -->
                 <div class="space-y-3">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">PVP</span>
-                        <span class="font-medium text-gray-900">${{ number_format($pvp, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">IVA (15%)</span>
-                        <span class="font-medium text-gray-900">${{ number_format($iva, 2) }}</span>
-                    </div>
-                    <hr class="border-gray-200">
-                    <div class="flex justify-between text-lg font-bold">
-                        <span class="text-gray-900">Total</span>
-                        <span class="text-primary">${{ number_format($total, 2) }}</span>
-                    </div>
+                    @if ($total > 0)
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">PVP</span>
+                            <span class="font-medium text-gray-900">${{ number_format($pvp, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">IVA (15%)</span>
+                            <span class="font-medium text-gray-900">${{ number_format($iva, 2) }}</span>
+                        </div>
+                        <hr class="border-gray-200">
+                        <div class="flex justify-between text-lg font-bold">
+                            <span class="text-gray-900">Total</span>
+                            <span class="text-primary">${{ number_format($total, 2) }}</span>
+                        </div>
+                    @else
+                        <div class="text-center text-gray-500 py-4">
+                            <p class="text-sm">Calcule para ver el total de la cotización</p>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="flex justify-end mt-6 space-x-2">
