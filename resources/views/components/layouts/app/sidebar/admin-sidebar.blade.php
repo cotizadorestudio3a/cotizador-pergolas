@@ -25,8 +25,8 @@
             <flux:navlist.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('dashboard')"
                                wire:navigate>{{ __('Historial de cotizaciones') }}
             </flux:navlist.item>
-            <flux:navlist.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('dashboard')"
-                               wire:navigate>{{ __('Actualizar precios') }}
+            <flux:navlist.item icon="currency-dollar" :href="route('admin.materials.index')" :current="request()->routeIs('admin.materials.*')"
+                               wire:navigate>{{ __('Gestionar precios') }}
             </flux:navlist.item>
         </flux:navlist.group>
     </flux:navlist>

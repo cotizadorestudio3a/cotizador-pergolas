@@ -47,6 +47,11 @@ Route::middleware(['admin-role'])->prefix('admin')->name('admin.')->group(functi
     Route::prefix('quotations')->name('quotations.')->group( function() {
         Route::get('/', \App\Livewire\Admin\Quotations\Index::class)->name('index');
     });
+
+    // Materiales (Administración de precios)
+    Route::prefix('materials')->name('materials.')->group(function () {
+        Route::get('/', \App\Livewire\Admin\Materials\Index::class)->name('index');
+    });
 });
 
 Route::middleware(['vendor-role'])->prefix('vendor')->name('vendor.')->group(function () {

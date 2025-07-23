@@ -3,6 +3,7 @@
 namespace App\Services\Pergolas;
 
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Material;
 
 class PergolaVidrio extends PergolaBase
 {
@@ -245,39 +246,42 @@ class PergolaVidrio extends PergolaBase
 
     private function definirPrecios()
     {
-        $this->precio_viga_principal_sujecion = 100;
-        $this->precio_viga_secundaria = 100;
-        $this->precio_columna = 100;
-        $this->precio_anillo = 100;
-        $this->precio_canal_agua = 91;
-        $this->precio_malla = 3.15;
-        $this->precio_alucobond_canal = 22.31;
-        $this->precio_ancla = 24;
-        $this->precio_tacos = 0.03;
-        $this->precio_tornillos_pared = 0.06;
-        $this->precio_tornillos_piso = 0.06;
-        $this->precio_tornillos_aluminio = 0.08;
-        $this->precio_fleje_metalico = 6;
-        $this->precio_aquaprotect = 81;
-        $this->precio_andamios = 1.25;
-        $this->precio_t = 5.42;
-        $this->precio_angulo = 7;
-        $this->precio_cinta_doble_faz = 9;
-        $this->precio_silicon_sellante = 4;
-        $this->precio_silicon_color = 4;
-        $this->precio_masking = 1.1;
-        $this->precio_vidrio = 25;
-        $this->precio_alumband = 10;
-        $this->precio_tubo_pvc_3 = 6;
-        $this->precio_codo_pvc_45_3 = 4;
-        $this->precio_codo_pvc_90_3 = 4;
-        $this->precio_calipega = 3;
-        $this->precio_plastico_negro = 0.58;
+        // Obtener todos los precios desde la base de datos
+        $materialPrices = Material::getAllPricesArray();
+        
+        $this->precio_viga_principal_sujecion = $materialPrices['viga_principal_sujecion'] ?? 100;
+        $this->precio_viga_secundaria = $materialPrices['viga_secundaria'] ?? 100;
+        $this->precio_columna = $materialPrices['columna'] ?? 100;
+        $this->precio_anillo = $materialPrices['anillo'] ?? 100;
+        $this->precio_canal_agua = $materialPrices['canal_agua'] ?? 91;
+        $this->precio_malla = $materialPrices['malla'] ?? 3.15;
+        $this->precio_alucobond_canal = $materialPrices['alucobond_canal'] ?? 22.31;
+        $this->precio_ancla = $materialPrices['ancla'] ?? 24;
+        $this->precio_tacos = $materialPrices['tacos'] ?? 0.03;
+        $this->precio_tornillos_pared = $materialPrices['tornillos_pared'] ?? 0.06;
+        $this->precio_tornillos_piso = $materialPrices['tornillos_piso'] ?? 0.06;
+        $this->precio_tornillos_aluminio = $materialPrices['tornillos_aluminio'] ?? 0.08;
+        $this->precio_fleje_metalico = $materialPrices['fleje_metalico'] ?? 6;
+        $this->precio_aquaprotect = $materialPrices['aquaprotect'] ?? 81;
+        $this->precio_andamios = $materialPrices['andamios'] ?? 1.25;
+        $this->precio_t = $materialPrices['t'] ?? 5.42;
+        $this->precio_angulo = $materialPrices['angulo'] ?? 7;
+        $this->precio_cinta_doble_faz = $materialPrices['cinta_doble_faz'] ?? 9;
+        $this->precio_silicon_sellante = $materialPrices['silicon_sellante'] ?? 4;
+        $this->precio_silicon_color = $materialPrices['silicon_color'] ?? 4;
+        $this->precio_masking = $materialPrices['masking'] ?? 1.1;
+        $this->precio_vidrio = $materialPrices['vidrio'] ?? 25;
+        $this->precio_alumband = $materialPrices['alumband'] ?? 10;
+        $this->precio_tubo_pvc_3 = $materialPrices['tubo_pvc_3'] ?? 6;
+        $this->precio_codo_pvc_45_3 = $materialPrices['codo_pvc_45_3'] ?? 4;
+        $this->precio_codo_pvc_90_3 = $materialPrices['codo_pvc_90_3'] ?? 4;
+        $this->precio_calipega = $materialPrices['calipega'] ?? 3;
+        $this->precio_plastico_negro = $materialPrices['plastico_negro'] ?? 0.58;
         $this->precio_pergola = ($this->cantidad_pergola > 0 && $this->cantidad_pergola < 10) ? (180 / $this->cantidad_pergola) : 18;
-        $this->precio_columnas = 5;
-        $this->precio_n_bajantes = 10;
-        $this->precio_aluco_bond = 10;
-        $this->precio_anillos = 5;
+        $this->precio_columnas = $materialPrices['columnas'] ?? 5;
+        $this->precio_n_bajantes = $materialPrices['n_bajantes'] ?? 10;
+        $this->precio_aluco_bond = $materialPrices['aluco_bond'] ?? 10;
+        $this->precio_anillos = $materialPrices['anillos'] ?? 5;
     }
 
     private function calcularTotales()
@@ -401,6 +405,8 @@ class PergolaVidrio extends PergolaBase
             'anillos',
         ];
 
+        // Obtener todos los materiales con sus códigos desde la base de datos
+        $materialesConCodigos = Material::pluck('code', 'name')->toArray();
 
         $detalle = [];
         foreach ($materiales as $nombre => $clave) {
@@ -412,7 +418,12 @@ class PergolaVidrio extends PergolaBase
             ? $cantidad * $precio
             : $unidades * $precio;
 
+            // Buscar el código del material en la base de datos
+            $codigoMaterial = $materialesConCodigos[$clave] ?? 'N/A';
+
             $detalle[$nombre] = [
+                'codigo' => $codigoMaterial,
+                'nombre' => $nombre,
                 'cantidad' => $cantidad,
                 'unidades' => $unidades,
                 'precio_unitario' => $precio,

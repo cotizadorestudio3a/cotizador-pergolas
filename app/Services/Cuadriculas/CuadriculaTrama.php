@@ -2,6 +2,7 @@
 
 namespace App\Services\Cuadriculas;
 
+use App\Models\Material;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class CuadriculaTrama extends CuadriculaBase
@@ -150,11 +151,14 @@ class CuadriculaTrama extends CuadriculaBase
 
     private function definirPreciosCuadricula()
     {
-        $this->precio_cuadricula = 10;
-        $this->precio_tornillos_cuadricula = 0.06;
-        $this->precio_tornillos_t = 0.06;
-        $this->precio_t_cuadricula = 5.42;
-        $this->precio_mano_de_obra_cuadricula = 5;
+
+        $materialPrices = Material::getAllPricesArray();
+
+        $this->precio_cuadricula = $materialPrices['cuadricula'] ?? 10;
+        $this->precio_tornillos_cuadricula = $materialPrices['tornillo_cuadricula'] ?? 0.06;
+        $this->precio_tornillos_t = $material_prices['tornillos_t_cuadricula'] ?? 0.06;
+        $this->precio_t_cuadricula = $material_prices['t'] ?? 5.42;
+        $this->precio_mano_de_obra_cuadricula = $material_prices['mano_de_obra_cuadricula_trama'] ?? 5;
     }
 
     private function obtenerDetalleMateriales()
@@ -184,7 +188,12 @@ class CuadriculaTrama extends CuadriculaBase
                 ? $cantidad * $precio
                 : $unidades * $precio;
 
+
+            $codigoMaterial = $this->obtenerCodigoMaterial($clave);
+
             $detalle[$nombre] = [
+                'codigo' => $codigoMaterial,
+                'nombre' => $nombre,
                 'cantidad' => $cantidad,
                 'unidades' => $unidades,
                 'precio_unitario' => $precio,
@@ -193,6 +202,25 @@ class CuadriculaTrama extends CuadriculaBase
         }
 
         return $detalle;
+    }
+
+    private function obtenerCodigoMaterial(string $clave): string
+    {
+        static $materialesConCodigos = null;
+
+        if (!$materialesConCodigos) {
+            $materialesConCodigos = Material::pluck('code', 'name')->toArray();
+        }
+
+        // Excepciones manuales
+        $mapeoClaves = [
+            't_cuadricula' => 't',
+            'mano_de_obra_cuadricula' => 'mano_de_obra_cuadricula_trama',
+        ];
+
+        $claveBuscada = $mapeoClaves[$clave] ?? $clave;
+
+        return $materialesConCodigos[$claveBuscada] ?? 'N/A';
     }
 
     public function obtenerPDFCotizacion(): string

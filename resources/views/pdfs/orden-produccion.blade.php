@@ -28,6 +28,17 @@
             text-align: left;
         }
 
+        .codigo-material {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+
+        .nombre-material {
+            font-weight: 500;
+        }
+
         h2 {
             margin-top: 30px;
         }
@@ -46,6 +57,7 @@
     <table>
         <thead>
             <tr>
+                <th>Código</th>
                 <th>Material</th>
                 <th>Cantidad</th>
                 <th>Unidades</th>
@@ -56,7 +68,8 @@
         <tbody>
             @foreach ($materiales as $nombre => $datos)
                 <tr>
-                    <td>{{ $nombre }}</td>
+                    <td class="codigo-material">{{ $datos['codigo'] }}</td>
+                    <td class="nombre-material">{{ $datos['nombre'] }}</td>
                     <td>{{ number_format($datos['cantidad'], 2) }}</td>
                     <td>{{ number_format($datos['unidades'], 2) }}</td>
                     <td>${{ number_format($datos['precio_unitario'], 2) }}</td>
