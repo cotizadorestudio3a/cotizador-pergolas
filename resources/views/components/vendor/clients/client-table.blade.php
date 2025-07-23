@@ -1,113 +1,112 @@
-<div class="p-6 overflow-x-auto w-full">
-    <table class="w-full min-w-[640px] text-left table-auto">
-        <thead>
-            <tr>
-                <th class="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
-                    <p
-                        class="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                        Nombre
-                    </p>
-                </th>
-                <th class="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
-                    <p
-                        class="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                        DNI
-                    </p>
-                </th>
-
-                <th class="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
-                    <p
-                        class="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                        Telefono
-                    </p>
-                </th>
-
-                <th class="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
-                    <p
-                        class="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                        Provincia
-                    </p>
-                </th>
-                <th class="p-4 border-y border-blue-gray-100 bg-blue-gray-50/50">
-                    <p
-                        class="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                        Fecha de registro
-                    </p>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-
-            @forelse($clients as $client)
-                <tr>
-                    <td class="p-4 border-b border-blue-gray-50">
-                        <div class="flex items-center gap-3">
-                            <!--
-                                <img src=" {{ asset('img/avatar_student.jpg') }}" alt="user profile"
-                                     class="relative inline-block h-12 w-12 !rounded-full border border-blue-gray-50 bg-blue-gray-50/50 object-contain object-center p-1"/>
--->
-                            <p class="block font-sans text-sm antialiased font-bold leading-normal text-blue-gray-900">
-                                {{ $client->name }}
-                            </p>
-                        </div>
-                    </td>
-                    <td class="p-4 border-b border-blue-gray-50">
-                        <p class="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                            {{ $client->dni }}
-                        </p>
-                    </td>
-                    <td class="p-4 border-b border-blue-gray-50">
-                        <p class="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                            {{ $client->phone }}
-                        </p>
-                    </td>
-                    <td class="p-4 border-b border-blue-gray-50">
-                        <p class="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                            {{ $client->province }}
-                        </p>
-                    </td>
-
-                    <td class="p-4 border-b border-blue-gray-50">
-                        <p class="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                            {{ $client->created_at->diffForHumans() }}
-                        </p>
-                    </td>
-                    <td class="p-4 border-b border-blue-gray-50">
-                        <div x-data="{ confirming: false }" class="relative">
-
-                            <!-- Botón principal -->
-                            <flux:button variant="danger" @click="confirming = !confirming">Borrar</flux:button>
-
-                            <!-- Popover flotante -->
-                            <div x-show="confirming" x-transition @click.outside="confirming = false"
-                                class="absolute z-20 mt-2 left-0 w-48 bg-white shadow-lg rounded-lg border border-gray-200 p-4 flex flex-col gap-3">
-                                <p class="text-sm text-gray-700">¿Seguro que quieres eliminar este cliente?</p>
-
-                                <div class="flex flex-col gap-2">
-                                    <flux:button variant="ghost" @click="confirming = false">Cancelar</flux:button>
-                                    <flux:button variant="danger" wire:click="delete({{ $client->id }})"
-                                        @click="confirming = false">
-                                        Sí, eliminar
-                                    </flux:button>
+<div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
+    @if ($clients->count() > 0)
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nombre
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            DNI
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Teléfono
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Provincia
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Fecha de registro
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Acciones</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach ($clients as $client)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">
+                                    {{ $client->name }}
                                 </div>
-                            </div>
-                        </div>
-                    </td>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    {{ number_format($client->dni, 0, '', '.') }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    {{ $client->phone }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    {{ $client->province }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div>{{ $client->created_at->format('d/m/Y') }}</div>
+                                <div class="text-xs">{{ $client->created_at->format('H:i') }}</div>
+                            </td>
 
-                </tr>
-            @empty
-                <div class="bg-white rounded-lg overflow-hidden">
-                    <div class="p-4 text-center">
-                        <h3 class="text-lg font-semibold text-gray-900">No hay clientes registrados</h3>
-                        <p class="text-sm text-gray-600">Agrega nuevos clientes en el sistema.</p>
-                    </div>
-                </div>
-            @endforelse
+                            @if (request()->routeIs('vendor.clients.index'))
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div x-data="{ confirming: false }" class="relative">
+                                        <!-- Botón principal -->
+                                        <flux:button variant="ghost" size="sm" icon="trash"
+                                            class="text-red-600 hover:text-red-800" @click="confirming = !confirming">
+                                            Eliminar
+                                        </flux:button>
 
-        </tbody>
-    </table>
+                                        <!-- Popover flotante -->
+                                        <div x-show="confirming" x-transition @click.outside="confirming = false"
+                                            class="absolute z-20 mt-2 -right-6 w-56 bg-white shadow-lg rounded-lg border border-gray-200 p-3 flex flex-col gap-3">
+                                            <p class="text-sm text-gray-700 leading-5 whitespace-normal">¿Seguro que
+                                                quieres eliminar este cliente?</p>
 
-    <div class="mt-4">
-        {{ $clients->links() }}
-    </div>
+                                            <div class="flex flex-col gap-2">
+                                                <flux:button variant="danger" wire:click="delete({{ $client->id }})"
+                                                    @click="confirming = false">
+                                                    Sí, eliminar
+                                                </flux:button>
+                                                <flux:button variant="ghost" @click="confirming = false">Cancelar
+                                                </flux:button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            @endif
+
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="px-6 py-4 border-t border-gray-200">
+            {{ $clients->links() }}
+        </div>
+    @else
+        <!-- Estado vacío -->
+        <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay clientes registrados</h3>
+            <p class="mt-1 text-sm text-gray-500">
+                Agrega nuevos clientes en el sistema para comenzar a generar cotizaciones.
+            </p>
+        </div>
+    @endif
 </div>

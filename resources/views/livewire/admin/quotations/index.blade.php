@@ -1,21 +1,15 @@
-<div class="min-h-screen bg-gray-50">
+<div>
     <!-- Header -->
-    <div class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-6">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Gestión de Cotizaciones</h1>
-                    <p class="text-gray-600">Administra todas las cotizaciones del sistema</p>
-                </div>
-            </div>
-        </div>
+    <div class="bg-white p-8 rounded-3xl mb-6">
+        <h1 class="font-semibold text-2xl">Gestión de Cotizaciones</h1>
+        <p class="text-gray-500">Gestiona todas las cotizaciones que se han ralizado en el sistema</p>
     </div>
 
     <!-- Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="py-6">
         
         <!-- Filtros y Búsqueda -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="bg-white rounded-3xl p-8 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <!-- Búsqueda General -->
                 <div class="lg:col-span-2">
@@ -72,7 +66,7 @@
         </div>
 
         <!-- Tabla de Cotizaciones -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">

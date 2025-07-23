@@ -16,14 +16,14 @@
             <flux:navlist.item icon="home" :href="route('vendor.dashboard')" :current="request()->routeIs('vendor.dashboard')"
                                wire:navigate>{{ __('Panel principal') }}
             </flux:navlist.item>
-            <flux:navlist.item icon="add-user" :href="route('vendor.quotes.index')" :current="request()->routeIs('vendor.quotes.index')"
+            <flux:navlist.item icon="new-quotation" :href="route('vendor.quotes.index')" :current="request()->routeIs('vendor.quotes.index')"
                                wire:navigate>{{ __('Nueva cotización') }}
             </flux:navlist.item>
-            <flux:navlist.item icon="home" :href="route('vendor.clients.index')" :current="request()->routeIs('vendor.clients.index')"
-                               wire:navigate>{{ __('Mis clientes') }}
-            </flux:navlist.item>
-            <flux:navlist.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('dashboard')"
+            <flux:navlist.item icon="manage-quotations" :href="route('vendor.quotations.index')" :current="request()->routeIs('vendor.quotations.index')"
                                wire:navigate>{{ __('Historial de cotizaciones') }}
+            </flux:navlist.item>
+            <flux:navlist.item icon="user" :href="route('vendor.clients.index')" :current="request()->routeIs('vendor.clients.index')"
+                               wire:navigate>{{ __('Mis clientes') }}
             </flux:navlist.item>
         </flux:navlist.group>
     </flux:navlist>

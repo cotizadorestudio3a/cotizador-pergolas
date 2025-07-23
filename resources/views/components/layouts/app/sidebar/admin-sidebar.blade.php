@@ -17,12 +17,12 @@
                                wire:navigate>{{ __('Panel principal') }}
             </flux:navlist.item>
             <flux:navlist.item icon="add-user" :href="route('admin.vendors.index')" :current="request()->routeIs('admin.vendors.index')"
-                               wire:navigate>{{ __('Agregar vendedor') }}
+                               wire:navigate>{{ __('Gestion de vendedores') }}
             </flux:navlist.item>
             <flux:navlist.item icon="home" :href="route('admin.assign.index')" :current="request()->routeIs('admin.assign.index')"
-                               wire:navigate>{{ __('Asignar clientes') }}
+                               wire:navigate>{{ __('Gestion de clientes') }}
             </flux:navlist.item>
-            <flux:navlist.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('dashboard')"
+            <flux:navlist.item icon="manage-quotations" :href="route('admin.quotations.index')" :current="request()->routeIs('admin.quotations.index')"
                                wire:navigate>{{ __('Historial de cotizaciones') }}
             </flux:navlist.item>
             <flux:navlist.item icon="currency-dollar" :href="route('admin.materials.index')" :current="request()->routeIs('admin.materials.*')"

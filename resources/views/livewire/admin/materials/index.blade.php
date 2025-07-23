@@ -13,7 +13,7 @@
     @endif
 
     <!-- Actions Bar -->
-    <div class="bg-white p-6 rounded-xl shadow mb-6">
+    <div class="bg-white p-6 rounded-3xl mb-6">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
             <!-- Search -->
             <div class="flex-1 max-w-md">
@@ -33,7 +33,7 @@
     </div>
 
     <!-- Materials Table -->
-    <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">

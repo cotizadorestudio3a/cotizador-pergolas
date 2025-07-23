@@ -66,7 +66,7 @@
         </div>
 
         <!-- Tabla de cotizaciones -->
-        <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
             @if($quotations->count() > 0)
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">

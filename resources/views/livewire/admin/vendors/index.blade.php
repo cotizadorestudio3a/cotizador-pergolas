@@ -1,10 +1,11 @@
 <div>
-    <div class=" sm:px-6 lg:px-8">
+    <div>
 
-        <div class="bg-white p-8 rounded-3xl">
-            <h1 class="font-semibold text-2xl">Vendedores</h1>
-            <p class="text-gray-500">Gestiona los vendedores desde aqui.</p>
-        </div>
+    <!-- Header -->
+    <div class="bg-white p-8 rounded-3xl mb-6">
+        <h1 class="font-semibold text-2xl">Gestión de vendedores</h1>
+        <p class="text-gray-500">Gestiona todos los vendedores que se han registrado en el sistema</p>
+    </div>
  
         <div class="mb-4 mt-8 flex flex-row gap-4 items-center">
             <livewire:admin.vendors.create @vendor-created="$refresh"/>
