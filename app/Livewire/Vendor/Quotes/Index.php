@@ -227,36 +227,106 @@ class Index extends Component
     public function generatePDFFiles()
     {
         try {
+            // Debug completo del estado antes de empezar
+            $this->debugPrePDFGeneration();
+
+            Log::info('=== INICIO GENERACIÓN PDF ===', [
+                'user_id' => Auth::id(),
+                'client_id' => $this->client_id,
+                'step' => $this->step,
+                'added_services_count' => count($this->added_services),
+                'inputs_count' => count($this->inputsPorServicio),
+                'total' => $this->total,
+                'memory_usage' => memory_get_usage(true),
+                'time' => now()->toDateTimeString()
+            ]);
+
             // Validar que tengamos toda la información necesaria
+            Log::info('Iniciando validación de datos...');
             $validationErrors = $this->validateQuotationData();
 
             if (!empty($validationErrors)) {
+                Log::error('Errores de validación encontrados:', $validationErrors);
                 foreach ($validationErrors as $field => $message) {
                     $this->addError($field, $message);
                 }
                 return;
             }
+            Log::info('Validación de datos completada exitosamente');
             
             // Guardar la cotización en la base de datos
+            Log::info('Iniciando guardado de cotización en BD...');
             $quotation = $this->saveQuotationToDatabase();
+            Log::info('Cotización guardada exitosamente:', [
+                'quotation_id' => $quotation->id,
+                'memory_usage' => memory_get_usage(true)
+            ]);
         
             // Generar los PDFs
+            Log::info('Iniciando generación de PDFs...', [
+                'added_services' => $this->added_services,
+                'inputs_por_servicio' => $this->inputsPorServicio,
+                'quotation_id' => $quotation->id
+            ]);
+
             $this->pdfs_generados = $this->pdfGenerator->generateAllPDFs(
                 $this->added_services, 
                 $this->inputsPorServicio,
                 $quotation
             );
 
+            Log::info('PDFs generados exitosamente:', [
+                'pdfs_count' => count($this->pdfs_generados),
+                'pdfs_generados' => $this->pdfs_generados,
+                'memory_usage' => memory_get_usage(true)
+            ]);
+
+            Log::info('Cambiando step a 4...');
             $this->step = 4;
+            Log::info('Step cambiado exitosamente, step actual:', ['step' => $this->step]);
             
             // Dispatch evento de cotización guardada exitosamente
+            Log::info('Disparando evento cotizacionGuardada...');
             $this->dispatch('cotizacionGuardada', [
                 'quotation_id' => $quotation->id,
                 'message' => 'Cotización guardada exitosamente'
             ]);
+            Log::info('Evento cotizacionGuardada disparado exitosamente');
+            
+            Log::info('=== FIN GENERACIÓN PDF EXITOSA ===', [
+                'final_step' => $this->step,
+                'final_memory_usage' => memory_get_usage(true),
+                'time' => now()->toDateTimeString()
+            ]);
             
         } catch (\Exception $e) {
+            Log::error('=== ERROR EN GENERACIÓN PDF ===', [
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'error_trace' => $e->getTraceAsString(),
+                'user_id' => Auth::id(),
+                'client_id' => $this->client_id,
+                'step' => $this->step,
+                'memory_usage' => memory_get_usage(true),
+                'time' => now()->toDateTimeString()
+            ]);
+            
             $this->addError('pdf_generation', 'Error al procesar la cotización: ' . $e->getMessage());
+        } catch (\Throwable $t) {
+            Log::error('=== ERROR FATAL EN GENERACIÓN PDF ===', [
+                'error_message' => $t->getMessage(),
+                'error_file' => $t->getFile(),
+                'error_line' => $t->getLine(),
+                'error_trace' => $t->getTraceAsString(),
+                'user_id' => Auth::id(),
+                'client_id' => $this->client_id,
+                'step' => $this->step,
+                'memory_usage' => memory_get_usage(true),
+                'time' => now()->toDateTimeString()
+            ]);
+            
+            $this->addError('pdf_generation', 'Error fatal al procesar la cotización: ' . $t->getMessage());
         }
     }
 
@@ -287,23 +357,46 @@ class Index extends Component
      */
     private function saveQuotationToDatabase()
     {
-        $quotationData = [
-            'client_id' => $this->client_id,
-            'user_id' => Auth::id(),
-            'total' => $this->total,
-            'iva' => $this->iva,
-            'pvp' => $this->pvp,
-        ];
+        try {
+            Log::info('=== GUARDANDO COTIZACIÓN EN BD ===');
+            
+            $quotationData = [
+                'client_id' => $this->client_id,
+                'user_id' => Auth::id(),
+                'total' => $this->total,
+                'iva' => $this->iva,
+                'pvp' => $this->pvp,
+            ];
 
-        $quotation = $this->quotationService->createQuotation(
-            $quotationData,
-            $this->added_services,
-            $this->inputsPorServicio
-        );
+            Log::info('Datos de cotización preparados:', $quotationData);
+            Log::info('Servicios agregados:', $this->added_services);
+            Log::info('Inputs por servicio:', $this->inputsPorServicio);
 
-        $this->saved_quotation_id = $quotation->id;
+            $quotation = $this->quotationService->createQuotation(
+                $quotationData,
+                $this->added_services,
+                $this->inputsPorServicio
+            );
 
-        return $quotation;
+            Log::info('Cotización creada exitosamente:', [
+                'quotation_id' => $quotation->id,
+                'quotation_data' => $quotation->toArray()
+            ]);
+
+            $this->saved_quotation_id = $quotation->id;
+            Log::info('Saved quotation ID asignado:', ['saved_quotation_id' => $this->saved_quotation_id]);
+
+            return $quotation;
+            
+        } catch (\Exception $e) {
+            Log::error('Error al guardar cotización:', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
     public function decrementStep()
@@ -501,6 +594,16 @@ class Index extends Component
 
     public function render()
     {
+        // Debug del estado del componente en cada render
+        Log::info('=== RENDER DEL COMPONENTE ===', [
+            'step' => $this->step,
+            'user_id' => Auth::id(),
+            'pdfs_generados_count' => count($this->pdfs_generados),
+            'saved_quotation_id' => $this->saved_quotation_id,
+            'memory_usage' => memory_get_usage(true),
+            'time' => now()->toDateTimeString()
+        ]);
+
         $services = Services::all();
         $variants = $this->variants;
         $clients = Auth::user()?->clients ?? collect();
@@ -526,6 +629,69 @@ class Index extends Component
             'iva' => $this->iva,
             'total' => $this->total
         ]);
+    }
+
+    /**
+     * Debug completo antes de generar PDFs
+     */
+    public function debugPrePDFGeneration()
+    {
+        Log::info('=== DEBUG PRE-GENERACIÓN PDF ===', [
+            'user_id' => Auth::id(),
+            'user_email' => Auth::user()?->email,
+            'client_id' => $this->client_id,
+            'step' => $this->step,
+            'added_services' => $this->added_services,
+            'inputsPorServicio' => $this->inputsPorServicio,
+            'pvp' => $this->pvp,
+            'iva' => $this->iva,
+            'total' => $this->total,
+            'pdfs_generados' => $this->pdfs_generados,
+            'saved_quotation_id' => $this->saved_quotation_id,
+            'memory_usage' => memory_get_usage(true),
+            'memory_peak' => memory_get_peak_usage(true),
+            'time_limit' => ini_get('max_execution_time'),
+            'memory_limit' => ini_get('memory_limit'),
+            'php_version' => PHP_VERSION,
+            'laravel_version' => app()->version()
+        ]);
+
+        // Verificar que los servicios están completos
+        foreach ($this->added_services as $index => $service) {
+            Log::info("Servicio {$index} completo:", [
+                'service_data' => $service,
+                'has_inputs' => isset($this->inputsPorServicio[$service['input_index']]),
+                'inputs_data' => $this->inputsPorServicio[$service['input_index']] ?? 'NO ENCONTRADO'
+            ]);
+        }
+    }
+
+    /**
+     * Método para verificar el estado actual del componente (usar desde navegador)
+     */
+    public function debugCurrentState()
+    {
+        $state = [
+            'step' => $this->step,
+            'user_id' => Auth::id(),
+            'client_id' => $this->client_id,
+            'added_services' => $this->added_services,
+            'inputsPorServicio' => $this->inputsPorServicio,
+            'pvp' => $this->pvp,
+            'iva' => $this->iva,
+            'total' => $this->total,
+            'pdfs_generados' => $this->pdfs_generados,
+            'saved_quotation_id' => $this->saved_quotation_id,
+            'memory_usage' => memory_get_usage(true),
+            'time' => now()->toDateTimeString()
+        ];
+
+        Log::info('=== DEBUG ESTADO ACTUAL ===', $state);
+        
+        // También mostrar en la consola del navegador
+        $this->dispatch('console-log', $state);
+        
+        return $state;
     }
 
 }
