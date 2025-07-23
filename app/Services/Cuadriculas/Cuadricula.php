@@ -4,6 +4,7 @@ namespace App\Services\Cuadriculas;
 
 use App\Models\Material;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
 
 class Cuadricula extends CuadriculaBase
 {
@@ -242,11 +243,19 @@ class Cuadricula extends CuadriculaBase
                 'area' => $this->area_cuadricula,
             ],
         ];
-
         $pdf = Pdf::loadView('pdfs.orden-produccion', $data);
-        $path = 'pdf/orden_produccion/cuadriculas/orden_produccion_' . now()->timestamp . '.pdf';
-        $pdf->save(storage_path('app/public/' . $path));
 
+        $path = 'pdf/orden_produccion/cuadriculas/orden_produccion_' . now()->timestamp . '.pdf';
+        $fullPath = storage_path('app/public/' . $path);
+
+        // Crear la carpeta si no existe
+        $directory = dirname($fullPath);
+        if (!File::exists($directory)) {
+            File::makeDirectory($directory, 0755, true); 
+        }
+
+        $pdf->save($fullPath);
+        
         return $path;
     }
 }
