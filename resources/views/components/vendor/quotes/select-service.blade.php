@@ -30,7 +30,11 @@
                     <!-- Encabezado del servicio -->
                     <div class="flex items-center gap-4 mb-6">
                         <div class="relative">
-                            <img src="{{ asset('img/img1.webp') }}"
+                            <img
+                            @php 
+                                $corintiaImagePath = $service->name == 'Pergola Corintia' ? asset('img/img_corintia.webp') : asset('img/img_corrediza.webp');
+                            @endphp
+                            src="{{ $corintiaImagePath }}"
                                 class="w-20 h-20 rounded-full object-cover ring-1 ring-gray-100 transition-all duration-300
                                  {{ $selectedService === $service->id ? 'ring-primary/40 ring-2' : 'group-hover:ring-gray-200' }}">
                         </div>
