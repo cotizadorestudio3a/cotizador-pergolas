@@ -8,10 +8,15 @@
     <!-- Grid de variantes más compacto -->
     <div class="grid grid-cols-2 gap-3">
         @foreach ($variants as $variant)
-            <div class="group relative overflow-hidden rounded-lg border transition-all duration-300 ease-in-out
-                {{ $selectedVariant === $variant->id
+            @php
+                $isSelected = $selectedVariant === $variant->id;
+                $isRestrictedVariant = in_array($variant->id, [3, 4]); // variantes restringidas (id desde la DB)
+                $cardClasses = $isSelected 
                     ? 'border-primary/30 bg-primary/5 shadow-sm'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm' }}"
+                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm';
+            @endphp
+
+            <div class="group relative overflow-hidden rounded-lg border transition-all duration-300 ease-in-out {{ $cardClasses }}"
                 wire:click="$set('selectedVariant', {{ $variant->id }})">
 
                 <!-- Indicador de selección más pequeño -->
@@ -49,28 +54,43 @@
                             <div class="pt-3 border-t border-gray-200 animate-fade-in">
                                 <div class="space-y-2">
                                     <flux:radio.group wire:model="selectedCuadricula" class="space-y-1" label="Opciones de cuadrícula">
-                                        <div class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
-                                            <flux:radio 
-                                            value="cuadricula" 
-                                            label="Cuadricula"
-                                            description="Vista estándar con líneas de guía"
-                                            checked 
-                                            />
-                                        </div>
+                                        @if (!$isRestrictedVariant)
+                                            {{-- Opciones completas para variantes normales --}}
+                                            <div class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
+                                                <flux:radio 
+                                                value="cuadricula" 
+                                                label="Cuadricula"
+                                                description="Vista estándar con líneas de guía"
+                                                checked 
+                                                />
+                                            </div>
 
-                                        <div
-                                            class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
-                                            <flux:radio 
-                                            value="cuadricula_trama" 
-                                            label="Cuadrícula con trama"
-                                            description="Incluye patrones y texturas"
-                                            />
-                                        </div>
+                                            <div class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
+                                                <flux:radio 
+                                                value="cuadricula_trama" 
+                                                label="Cuadrícula con trama"
+                                                description="Incluye patrones y texturas"
+                                                />
+                                            </div>
 
-                                        <div
-                                            class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
-                                            <flux:radio value="sin_cuadricula" label="Sin cuadrícula" description="Vista limpia sin líneas" />
-                                        </div>
+                                            <div class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
+                                                <flux:radio 
+                                                    value="sin_cuadricula" 
+                                                    label="Sin cuadrícula" 
+                                                    description="Vista limpia sin líneas"
+                                                />
+                                            </div>
+                                        @else
+                                            {{-- Solo opción sin cuadrícula para variantes restringidas (IDs 3 y 4) --}}
+                                            <div class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
+                                                <flux:radio 
+                                                    value="sin_cuadricula" 
+                                                    label="Sin cuadrícula" 
+                                                    description="Vista limpia sin líneas"
+                                                    checked
+                                                />
+                                            </div>
+                                        @endif
                                     </flux:radio.group>
                                 </div>
                             </div>

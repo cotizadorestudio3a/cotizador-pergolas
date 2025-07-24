@@ -30,13 +30,21 @@
                     <!-- Encabezado del servicio -->
                     <div class="flex items-center gap-3 mb-3">
                         <div class="relative">
-                            <img src="{{ asset('img/img1.webp') }}"
+                            @php
+                                $corintiaImagePath =
+                                    $service->id == 1
+                                        ? asset('img/img_corintia.webp')
+                                        : asset('img/img_corrediza.webp');
+                            @endphp
+                           
+                            <img src="{{ $corintiaImagePath }}"
                                 class="w-12 h-12 rounded-full object-cover ring-1 ring-gray-100 transition-all duration-300
                                  {{ $selectedService === $service->id ? 'ring-primary/40 ring-2' : 'group-hover:ring-gray-200' }}">
                         </div>
 
                         <div class="flex-1">
-                            <h3 class="text-base font-semibold text-gray-900 group-hover:text-primary transition-colors">
+                            <h3
+                                class="text-base font-semibold text-gray-900 group-hover:text-primary transition-colors">
                                 {{ $service->name }}
                             </h3>
 
@@ -112,7 +120,7 @@
                 @else
                     <span class="text-gray-400">Selecciona un servicio para continuar</span>
                 @endif
-            </div>        
+            </div>
         </div>
     </div>
 </div>

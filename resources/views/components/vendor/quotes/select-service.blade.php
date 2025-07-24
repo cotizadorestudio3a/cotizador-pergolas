@@ -32,7 +32,7 @@
                         <div class="relative">
                             <img
                             @php 
-                                $corintiaImagePath = $service->name == 'Pergola Corintia' ? asset('img/img_corintia.webp') : asset('img/img_corrediza.webp');
+                                $corintiaImagePath = $service->id == 1 ? asset('img/img_corintia.webp') : asset('img/img_corrediza.webp');
                             @endphp
                             src="{{ $corintiaImagePath }}"
                                 class="w-20 h-20 rounded-full object-cover ring-1 ring-gray-100 transition-all duration-300

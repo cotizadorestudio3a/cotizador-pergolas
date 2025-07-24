@@ -15,48 +15,44 @@ class ServicesSeeder extends Seeder
     {
         // Crear servicios básicos
         $pergolaVidrio = Services::create([
-            'name' => 'Pérgola de Vidrio'
+            'name' => 'Pérgola con Corintia'
         ]);
 
-        $pergolaCuadricula = Services::create([
-            'name' => 'Pérgola con Cuadrícula'
+        $pergolaCorrediza = Services::create([
+            'name' => 'Pérgola corrediza'
         ]);
 
-        $pergolaTrama = Services::create([
-            'name' => 'Pérgola con Trama'
-        ]);
-
-        // Crear variantes para Pérgola de Vidrio
+        // Crear variantes para Pérgola de corintia
         ServiceVariants::create([
             'service_id' => $pergolaVidrio->id,
-            'name' => 'Estándar'
+            'name' => 'Vidrio'
         ]);
 
         ServiceVariants::create([
             'service_id' => $pergolaVidrio->id,
-            'name' => 'Premium'
-        ]);
-
-        // Crear variantes para Pérgola con Cuadrícula
-        ServiceVariants::create([
-            'service_id' => $pergolaCuadricula->id,
-            'name' => 'Básica'
+            'name' => 'Policarbonato'
         ]);
 
         ServiceVariants::create([
-            'service_id' => $pergolaCuadricula->id,
-            'name' => 'Reforzada'
+            'service_id' => $pergolaVidrio->id,
+            'name' => 'RH - Vidrio'
         ]);
 
-        // Crear variantes para Pérgola con Trama
+
         ServiceVariants::create([
-            'service_id' => $pergolaTrama->id,
-            'name' => 'Liviana'
+            'service_id' => $pergolaVidrio->id,
+            'name' => 'RH - Teja asfaltica'
+        ]);
+
+        // Crear variantes para Pérgola corrediza
+        ServiceVariants::create([
+            'service_id' => $pergolaCorrediza->id,
+            'name' => 'Vidrio'
         ]);
 
         ServiceVariants::create([
-            'service_id' => $pergolaTrama->id,
-            'name' => 'Pesada'
+            'service_id' => $pergolaCorrediza->id,
+            'name' => 'Policarbonato'
         ]);
     }
 }

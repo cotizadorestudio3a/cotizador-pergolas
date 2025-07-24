@@ -10,7 +10,7 @@
         @foreach ($variants as $variant)
             @php
                 $isSelected = $selectedVariant === $variant->id;
-                $isRestrictedVariant = in_array($variant->id, [2, 11]);
+                $isRestrictedVariant = in_array($variant->id, [3, 4]); // variantes restringidas (id desde la DB)
                 $cardClasses = $isSelected 
                     ? 'border-primary/30 bg-primary/5 shadow-sm'
                     : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm';
