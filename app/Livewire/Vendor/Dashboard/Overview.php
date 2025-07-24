@@ -9,6 +9,7 @@ class Overview extends Component
     public function render()
     {
         $clients = auth()->user()->clients()->paginate(10);
-        return view('livewire.vendor.dashboard.overview', compact('clients'));
+        $quotationTotalAmount = auth()->user()->quotations()->sum('total');
+        return view('livewire.vendor.dashboard.overview', compact('clients', 'quotationTotalAmount'));
     }
 }

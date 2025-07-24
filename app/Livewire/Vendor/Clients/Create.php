@@ -58,7 +58,7 @@ class Create extends Component
 
             $client->vendors()->attach(auth()->id());
 
-            $this->dispatch('client-created', name: $client->name);
+            $this->dispatch('client-created', message: 'Cliente creado exitosamente');
         });
 
         $this->modal('create')->close();

@@ -11,12 +11,12 @@
             <livewire:vendor.clients.create @client-created="$refresh" /> <!-- evento de livewire -->
 
             <x-error-info-message class="me-3 text-red-500" on="error-occurred">
-                Error al eliminar el <strong x-text="params"></strong>.
+                <span x-text="error.message"></span>
             </x-error-info-message>
 
 
             <x-success-info-message class="me-3 text-green-500" on="client-created">
-                Cliente <strong x-text="params"></strong> agregado correctamente.
+                <strong x-text="message.message"></strong>
             </x-success-info-message>
 
         </div>

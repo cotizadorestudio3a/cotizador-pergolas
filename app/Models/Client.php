@@ -20,7 +20,7 @@ class Client extends Model
 
     public function vendors(): BelongsToMany
     {
-        // Correct order: the current model's key (client_id) comes first, then related model's key (user_id)
+        // Relación muchos a muchos con User (vendedores)
         return $this->belongsToMany(User::class, 'client_user', 'client_id', 'user_id');
     }
 

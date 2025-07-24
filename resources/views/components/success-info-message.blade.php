@@ -5,7 +5,7 @@
 <div
     x-data="{ shown: false, timeout: null }"
     x-init="@this.on('{{ $on }}', (e) => {
-    params = e.name; //parametro enviado desde la clase
+    message = e; //parametro enviado desde la clase
     clearTimeout(timeout);
     shown = true;
     timeout = setTimeout(() => {

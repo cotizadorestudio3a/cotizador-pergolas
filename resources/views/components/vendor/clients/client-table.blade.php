@@ -57,7 +57,7 @@
                                 <div class="text-xs">{{ $client->created_at->format('H:i') }}</div>
                             </td>
 
-                            @if (request()->routeIs('vendor.clients.index'))
+                            @if (!request()->routeIs('vendor.dashboard'))
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div x-data="{ confirming: false }" class="relative">
                                         <!-- Botón principal -->
