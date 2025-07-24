@@ -596,6 +596,41 @@ class PergolaVidrio extends PergolaBase
     public function obtenerPDFOrdenProduccion(): string
     {
         $materiales = $this->obtenerDetalleMateriales();
+        
+        // Obtener información de columnas con colores si está disponible
+        $columnasInfo = [];
+        if (isset($this->data['columnas']) && is_array($this->data['columnas'])) {
+            $columnasInfo = $this->data['columnas'];
+        }
+        
+        // Obtener colores de columnas desde los inputs
+        $coloresColumnas = [];
+        if (isset($this->data['colores_columnas']) && is_array($this->data['colores_columnas'])) {
+            $coloresColumnas = $this->data['colores_columnas'];
+        }
+        
+        // Si no tenemos información detallada de columnas pero sí tenemos colores,
+        // crear estructura básica con la información disponible
+        if (empty($columnasInfo) && !empty($coloresColumnas)) {
+            $columnasInfo = [];
+            for ($i = 0; $i < $this->n_columnas; $i++) {
+                $columnasInfo[] = [
+                    'numero' => $i + 1,
+                    'color' => $coloresColumnas[$i] ?? 'azul',
+                    'altura' => $this->alto,
+                    'x' => null,
+                    'y' => null,
+                    'observaciones' => ''
+                ];
+            }
+        } else {
+            // Agregar colores a la información existente de columnas
+            foreach ($columnasInfo as $index => &$columna) {
+                $columna['color'] = $coloresColumnas[$index] ?? 'azul';
+                $columna['numero'] = $columna['numero'] ?? ($index + 1);
+            }
+        }
+        
         $data = [
             'materiales' => $materiales,
             'medidas' => [
@@ -603,7 +638,11 @@ class PergolaVidrio extends PergolaBase
                 'medidaB' => $this->medidaB,
                 'alto' => $this->alto,
                 'area' => $this->area,
+                'n_columnas' => $this->n_columnas,
+                'n_bajantes' => $this->n_bajantes,
+                'anillos' => $this->anillos,
             ],
+            'columnas' => $columnasInfo,
             'extras' => [
                 'estrategia_andamios' => $this->alquilar_andamios,
                 'nota_pago_por_dia' => $this->pagar_dia_pergola
@@ -611,14 +650,28 @@ class PergolaVidrio extends PergolaBase
             'titulo' => [
                 'titulo_servicio' => 'Pergola de Vidrio'
             ],
-            'numero_cotizacion' => $this->data['quotation_id'] ?? 'COT-' . now()->timestamp,
-            'fecha_emision' => now()->format('d/m/Y'),
-            'vigencia' => now()->addDays(30)->format('d/m/Y')
+            'cotizacion' => [
+                'numero_cotizacion' => $this->data['quotation_id'] ?? 'COT-' . now()->timestamp,
+                'fecha_emision' => now()->format('d/m/Y'),
+                'fecha_vencimiento' => now()->addDays(30)->format('d/m/Y'),
+                'fecha_orden' => now()->format('d/m/Y H:i:s'),
+            ],
+            'cliente' => [
+                'nombre' => $this->data['client_name'] ?? 'Cliente no especificado',
+                'dni' => $this->data['client_dni'] ?? '',
+                'telefono' => $this->data['client_phone'] ?? '',
+                'provincia' => $this->data['client_province'] ?? '',
+            ],
+            'tiempo_estimado' => [
+                'dias' => round($this->tiempoDias, 1),
+                'meses' => round($this->tiempoMeses, 2),
+            ]
         ];
 
         $pdf = Pdf::loadView('pdfs.orden-produccion', $data);
 
-        $path = 'pdf/orden_produccion/pergolas/orden_produccion_' . now()->timestamp . '.pdf';
+        $cotizacionId = $this->data['quotation_id'] ?? 'COT-' . now()->timestamp;
+        $path = 'pdf/orden_produccion/pergolas/orden_produccion_' . $cotizacionId . '_' . now()->timestamp . '.pdf';
         $fullPath = storage_path('app/public/' . $path);
 
         // Crear la carpeta si no existe
