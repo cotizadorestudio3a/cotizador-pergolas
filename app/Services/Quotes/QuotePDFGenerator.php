@@ -9,19 +9,19 @@ class QuotePDFGenerator
 {
     private const TIPOS_CUADRICULA = ['cuadricula', 'cuadricula_trama'];
 
-    public function generateAllPDFs(array $services, array $inputsPorServicio, $quotation = null): array
+    public function generateAllPDFs(array $services, array $inputsPorServicio, $quotation = null, array $servicesDetail = []): array
     {
         $pdfs_generados = [];
 
         // 1. Generar UN SOLO PDF comercial con todos los servicios
         if ($quotation) {
-            $commercialPDF = $this->generateCommercialPDF($services, $inputsPorServicio, $quotation);
+            $commercialPDF = $this->generateCommercialPDF($services, $inputsPorServicio, $quotation, $servicesDetail);
             $pdfs_generados[] = $commercialPDF;
         }
 
         // 2. Generar PDFs de producción individuales para cada servicio
         foreach ($services as $servicio) {
-            $productionPDFs = $this->generateProductionPDFsForService($servicio, $inputsPorServicio, $quotation);
+            $productionPDFs = $this->generateProductionPDFsForService($servicio, $inputsPorServicio, $quotation, $servicesDetail);
             $pdfs_generados = array_merge($pdfs_generados, $productionPDFs);
         }
 
@@ -31,7 +31,7 @@ class QuotePDFGenerator
     /**
      * Genera UN SOLO PDF comercial con todos los servicios de la cotización
      */
-    private function generateCommercialPDF(array $services, array $inputsPorServicio, $quotation): array
+    private function generateCommercialPDF(array $services, array $inputsPorServicio, $quotation, array $servicesDetail = []): array
     {
         // Usar el primer servicio como base para el PDF comercial
         $firstService = $services[0];
@@ -47,7 +47,10 @@ class QuotePDFGenerator
         $inputs['iva'] = $quotation->iva;
         $inputs['pvp'] = $quotation->pvp;
 
-        // Preparar información de TODOS los servicios para el PDF
+        // Agregar detalles de servicios con precios calculados
+        $inputs['services_detail'] = $servicesDetail;
+
+        // Preparar información de TODOS los servicios para el PDF (mantener compatibilidad)
         $inputs['all_services'] = [];
         
         foreach ($services as $servicio) {
@@ -75,7 +78,7 @@ class QuotePDFGenerator
     /**
      * Genera PDFs de producción para un servicio individual
      */
-    private function generateProductionPDFsForService(array $servicio, array $inputsPorServicio, $quotation = null): array
+    private function generateProductionPDFsForService(array $servicio, array $inputsPorServicio, $quotation = null, array $servicesDetail = []): array
     {
         $pdfs = [];
         $inputs = $inputsPorServicio[$servicio['input_index']];
@@ -84,6 +87,11 @@ class QuotePDFGenerator
         if ($quotation) {
             $inputs['quotation_id'] = 'COT-' . str_pad($quotation->id, 6, '0', STR_PAD_LEFT);
             $inputs['client_name'] = $quotation->client->name ?? '';
+        }
+
+        // Agregar detalles del servicio específico si están disponibles
+        if (!empty($servicesDetail) && isset($servicesDetail[$servicio['input_index']])) {
+            $inputs['service_detail'] = $servicesDetail[$servicio['input_index']];
         }
 
         // Agregar información del servicio específico

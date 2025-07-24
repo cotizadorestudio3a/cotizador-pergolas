@@ -478,8 +478,9 @@ class PergolaVidrio extends PergolaBase
     private function processAllServicesForPDF(array $allServices): array
     {
         $servicios = [];
+        $servicesDetail = $this->data['services_detail'] ?? [];
 
-        foreach ($allServices as $service) {
+        foreach ($allServices as $index => $service) {
             $inputs = $service['inputs'];
             
             // Obtener nombre de la variante
@@ -489,10 +490,17 @@ class PergolaVidrio extends PergolaBase
                 $variantName = $variant ? $variant->name : 'Vidrio';
             }
 
-            // Calcular pérgola
-            $pergola = new static($inputs);
-            $pergola->calcular();
-            $pergolaPrecio = $pergola->pvp_pergola;
+            // Obtener precios del detalle de servicios si están disponibles
+            $serviceDetail = $servicesDetail[$index] ?? [];
+            $pergolaPrecio = $serviceDetail['pvp_pergola'] ?? 0;
+            $cuadriculaPrecio = $serviceDetail['pvp_cuadricula'] ?? 0;
+
+            // Si no tenemos el detalle, calcular como fallback
+            if (empty($serviceDetail)) {
+                $pergola = new static($inputs);
+                $pergola->calcular();
+                $pergolaPrecio = $pergola->pvp_pergola;
+            }
 
             // Agregar servicio de pérgola
             $servicios[] = [
@@ -506,8 +514,8 @@ class PergolaVidrio extends PergolaBase
                 'precio' => $pergolaPrecio
             ];
 
-            // Agregar cuadrícula si aplica
-            if (!empty($service['selected_cuadricula']) && $service['selected_cuadricula'] !== 'ninguna') {
+            // Agregar cuadrícula si aplica y tiene precio
+            if (!empty($service['selected_cuadricula']) && $service['selected_cuadricula'] !== 'ninguna' && $cuadriculaPrecio > 0) {
                 $cuadriculaTipo = ucfirst(str_replace('_', ' ', $service['selected_cuadricula']));
                 
                 $medidaACuad = $inputs['medidaACuadricula'] ?? $inputs['medidaACuadriculaTrama'] ?? 0;
@@ -522,7 +530,7 @@ class PergolaVidrio extends PergolaBase
                         'alto' => $altoCuad,
                         'area' => $medidaACuad * $medidaBCuad,
                     ],
-                    'precio' => 0 // Se incluye en el precio de la pérgola
+                    'precio' => $cuadriculaPrecio // ✅ Usar precio real de la cuadrícula
                 ];
             }
         }
@@ -542,6 +550,11 @@ class PergolaVidrio extends PergolaBase
             $variantName = $variant ? $variant->name : 'Vidrio';
         }
 
+        // Obtener precios del detalle del servicio si están disponibles
+        $serviceDetail = $this->data['service_detail'] ?? [];
+        $pergolaPrecio = $serviceDetail['pvp_pergola'] ?? $this->pvp_pergola;
+        $cuadriculaPrecio = $serviceDetail['pvp_cuadricula'] ?? 0;
+
         // Preparar servicios cotizados
         $servicios = [
             [
@@ -552,12 +565,12 @@ class PergolaVidrio extends PergolaBase
                     'alto' => $this->alto,
                     'area' => $this->area,
                 ],
-                'precio' => $this->pvp_pergola
+                'precio' => $pergolaPrecio
             ]
         ];
 
-        // Agregar cuadrícula si fue seleccionada
-        if (!empty($this->data['selected_cuadricula']) && $this->data['selected_cuadricula'] !== 'ninguna') {
+        // Agregar cuadrícula si fue seleccionada y tiene precio
+        if (!empty($this->data['selected_cuadricula']) && $this->data['selected_cuadricula'] !== 'ninguna' && $cuadriculaPrecio > 0) {
             $cuadriculaTipo = ucfirst(str_replace('_', ' ', $this->data['selected_cuadricula']));
             
             // Obtener medidas de cuadrícula
@@ -573,7 +586,7 @@ class PergolaVidrio extends PergolaBase
                     'alto' => $altoCuad,
                     'area' => $medidaACuad * $medidaBCuad,
                 ],
-                'precio' => 0 // Se incluirá en el precio total de la pérgola
+                'precio' => $cuadriculaPrecio // ✅ Usar precio real de la cuadrícula
             ];
         }
 

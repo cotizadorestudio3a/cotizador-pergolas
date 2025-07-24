@@ -237,14 +237,18 @@ class Index extends Component
                 return;
             }
             
+            // Calcular totales con detalles de servicios
+            $totals = $this->calculator->calculateTotal($this->added_services, $this->inputsPorServicio);
+            
             // Guardar la cotización en la base de datos
             $quotation = $this->saveQuotationToDatabase();
         
-            // Generar los PDFs
+            // Generar los PDFs con los detalles de servicios
             $this->pdfs_generados = $this->pdfGenerator->generateAllPDFs(
                 $this->added_services, 
                 $this->inputsPorServicio,
-                $quotation
+                $quotation,
+                $totals['services_detail'] // Pasar detalles de servicios
             );
 
             $this->step = 4;
