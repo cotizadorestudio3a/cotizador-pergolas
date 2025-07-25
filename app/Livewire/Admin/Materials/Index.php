@@ -159,6 +159,10 @@ class Index extends Component
             ['code' => 'MANO_OBRA_CUADRICULA_TRAMA', 'name' => 'mano_de_obra_cuadricula_trama', 'unit' => 'unidad', 'unit_price' => 5],
             ['code' => 'TEJA_ASFALTICA', 'name' => 'teja_asfaltica', 'unit' => 'unidad', 'unit_price' => 33],
             ['code' => 'MADERA_RH', 'name' => 'madera_rh', 'unit' => 'unidad', 'unit_price' => 99.5],
+            ['code' => 'TORNILLO_CAPUCHON', 'name' => 'tornillo_capuchon', 'unit' => 'unidad', 'unit_price' => 0.9],
+            ['code' => 'UNION_POLICARBONATO', 'name' => 'union_policarbonato', 'unit' => 'unidad', 'unit_price' => 85],
+            ['code' => 'CINTA_FILTRO', 'name' => 'cinta_filtro', 'unit' => 'unidad', 'unit_price' => 36],
+            ['code' => 'POLICARBONATO', 'name' => 'policarbonato', 'unit' => 'm²', 'unit_price' => 15],
         ];
 
         foreach ($defaultMaterials as $material) {

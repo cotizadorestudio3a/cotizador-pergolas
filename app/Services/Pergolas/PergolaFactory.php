@@ -9,7 +9,7 @@ class PergolaFactory
     {
         return match ($tipo) {
             1 => new PergolaVidrio($data),        // variant_id = 1 (Vidrio)
-            2 => new PergolaVidrio($data),        // variant_id = 2 (Policarbonato) 
+            2 => new CorintiaPolicarbonato($data),        // variant_id = 2 (Policarbonato) 
             3 => new CorintiaRHVidrio($data),        // variant_id = 3 (RH - Vidrio)
             4 => new CorintiaRHTejaAsfaltica($data), // variant_id = 4 (RH - Teja asfaltica)
             default => throw new Exception("Tipo de pérgola desconocido: $tipo")
