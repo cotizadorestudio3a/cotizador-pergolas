@@ -19,7 +19,7 @@ class QuoteCalculator
             $inputs = $inputsPorServicio[$servicio['input_index']];
             
             // Calcular pérgola
-            $pergola = PergolaFactory::crear($servicio['service_id'], $inputs);
+            $pergola = PergolaFactory::crear($servicio['variant_id'], $inputs);
             $pergola_total = $pergola->calcular();
             $pvp_total += $pergola_total['pvp_pergola'];
 

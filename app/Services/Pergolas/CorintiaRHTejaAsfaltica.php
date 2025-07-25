@@ -6,7 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Material;
 use Illuminate\Support\Facades\File;
 
-class PergolaVidrio extends PergolaBase
+class CorintiaRHTejaAsfaltica extends PergolaBase
 {
 
     // INPUTS INICIALES //
@@ -57,13 +57,13 @@ class PergolaVidrio extends PergolaBase
     public $cantidad_fleje_metalico;
     public $cantidad_aquaprotect;
     public $cantidad_andamios;
-    public $cantidad_t;
     public $cantidad_angulo;
     public $cantidad_cinta_doble_faz;
     public $cantidad_silicon_sellante;
     public $cantidad_silicon_color;
     public $cantidad_masking;
-    public $cantidad_vidrio;
+    public $cantidad_teja_asfaltica;
+    public $cantidad_madera_rh;
     public $cantidad_alumband;
     public $cantidad_tubo_pvc_3;
     public $cantidad_codo_pvc_45_3;
@@ -85,12 +85,12 @@ class PergolaVidrio extends PergolaBase
     public $unidades_alucobond_canal;
     public $unidades_ancla;
     public $unidades_andamios;
-    public $unidades_t;
     public $unidades_angulo;
     public $unidades_cinta_doble_faz;
     public $unidades_silicon_sellante;
     public $unidades_silicon_color;
     public $unidades_masking;
+    public $unidades_madera_rh;
     public $unidades_alumband;
     public $unidades_tubo_pvc_3;
 
@@ -110,13 +110,13 @@ class PergolaVidrio extends PergolaBase
     public $precio_fleje_metalico;
     public $precio_aquaprotect;
     public $precio_andamios;
-    public $precio_t;
     public $precio_angulo;
     public $precio_cinta_doble_faz;
     public $precio_silicon_sellante;
     public $precio_silicon_color;
     public $precio_masking;
-    public $precio_vidrio;
+    public $precio_teja_asfaltica;
+    public $precio_madera_rh;
     public $precio_alumband;
     public $precio_tubo_pvc_3;
     public $precio_codo_pvc_45_3;
@@ -144,6 +144,7 @@ class PergolaVidrio extends PergolaBase
 
     public function __construct(array $data)
     {
+
         parent::__construct($data);
         $this->medidaA = max(0.1, (float)($data['medidaA'] ?? 0.1));
         $this->medidaB = max(0.1, (float)($data['medidaB'] ?? 0.1));
@@ -204,14 +205,16 @@ class PergolaVidrio extends PergolaBase
         $this->cantidad_fleje_metalico = $this->largoVigaPrincipal;
         $this->cantidad_aquaprotect = $this->cantidad_fleje_metalico * 0.1;
         $this->cantidad_andamios = intval(($this->alto / 2) * ($this->area / 15));
-        $this->cantidad_t = $this->numeroVigas * $this->largoVigas;
         $this->cantidad_angulo = $this->largoVigaPrincipal;
         $this->cantidad_cinta_doble_faz = ($this->numeroVigas * $this->largoVigas) * 2;
-        $this->cantidad_silicon_sellante = (($this->numeroVigas * $this->largoVigas) * 2) + $this->largoVigaPrincipal * intval($this->largoVigas / 2.4) + $this->largoVigaPrincipal * 4;
+        
+        $this->cantidad_silicon_sellante = ($this->numeroVigas * $this->largoVigas) + $this->largoVigaPrincipal * intval($this->largoVigas / 2.4) + $this->largoVigaPrincipal * 4;
+
         $this->cantidad_silicon_color = $this->largoVigaPrincipal * 3 + ($this->n_columnas * 0.6) * 3;
         $this->cantidad_masking = ($this->cantidad_silicon_color + $this->cantidad_silicon_sellante) * 2;
-        $this->cantidad_vidrio = $this->area;
-        $this->cantidad_alumband = $this->largoVigaPrincipal * 2;
+        $this->cantidad_teja_asfaltica = $this->area;
+        $this->cantidad_madera_rh = $this->area;
+        $this->cantidad_alumband = $this->largoVigas * 2 + $this->largoVigaPrincipal * 2;
         $this->cantidad_tubo_pvc_3 = $this->n_bajantes * $this->alto * 1.2;
         $this->cantidad_codo_pvc_45_3 = 2;
         $this->cantidad_codo_pvc_90_3 = 1;
@@ -235,12 +238,12 @@ class PergolaVidrio extends PergolaBase
         $this->unidades_alucobond_canal = round($this->cantidad_alucobond_canal / 2.9768, 0);
         $this->unidades_ancla = $this->cantidad_ancla / 6.4;
         $this->unidades_andamios = intval($this->tiempoDias * $this->cantidad_andamios);
-        $this->unidades_t = $this->cantidad_t / 6.4;
         $this->unidades_angulo = $this->cantidad_angulo / 6.5;
         $this->unidades_cinta_doble_faz = $this->cantidad_cinta_doble_faz / 25;
         $this->unidades_silicon_sellante = $this->cantidad_silicon_sellante / 5;
         $this->unidades_silicon_color = $this->cantidad_silicon_color / 6;
         $this->unidades_masking = $this->cantidad_masking / 100;
+        $this->unidades_madera_rh = $this->cantidad_madera_rh /5.246;
         $this->unidades_alumband = $this->cantidad_alumband / 5;
         $this->unidades_tubo_pvc_3 = $this->cantidad_tubo_pvc_3 / 3;
     }
@@ -249,7 +252,7 @@ class PergolaVidrio extends PergolaBase
     {
         // Obtener todos los precios desde la base de datos
         $materialPrices = Material::getAllPricesArray();
-        
+
         $this->precio_viga_principal_sujecion = $materialPrices['viga_principal_sujecion'] ?? 100;
         $this->precio_viga_secundaria = $materialPrices['viga_secundaria'] ?? 100;
         $this->precio_columna = $materialPrices['columna'] ?? 100;
@@ -265,13 +268,13 @@ class PergolaVidrio extends PergolaBase
         $this->precio_fleje_metalico = $materialPrices['fleje_metalico'] ?? 6;
         $this->precio_aquaprotect = $materialPrices['aquaprotect'] ?? 81;
         $this->precio_andamios = $materialPrices['andamios'] ?? 1.25;
-        $this->precio_t = $materialPrices['t'] ?? 5.42;
         $this->precio_angulo = $materialPrices['angulo'] ?? 7;
         $this->precio_cinta_doble_faz = $materialPrices['cinta_doble_faz'] ?? 9;
         $this->precio_silicon_sellante = $materialPrices['silicon_sellante'] ?? 4;
         $this->precio_silicon_color = $materialPrices['silicon_color'] ?? 4;
         $this->precio_masking = $materialPrices['masking'] ?? 1.1;
-        $this->precio_vidrio = $materialPrices['vidrio'] ?? 25;
+        $this->precio_teja_asfaltica = $materialPrices['teja_asfaltica'] ?? 33;
+        $this->precio_madera_rh = $materialPrices['madera_rh'] ?? 99.5;
         $this->precio_alumband = $materialPrices['alumband'] ?? 10;
         $this->precio_tubo_pvc_3 = $materialPrices['tubo_pvc_3'] ?? 6;
         $this->precio_codo_pvc_45_3 = $materialPrices['codo_pvc_45_3'] ?? 4;
@@ -303,13 +306,15 @@ class PergolaVidrio extends PergolaBase
             $this->precio_fleje_metalico * $this->cantidad_fleje_metalico +
             $this->precio_aquaprotect * $this->cantidad_aquaprotect +
             $this->unidades_andamios * $this->precio_andamios +
-            $this->unidades_t * $this->precio_t +
+
+            $this->precio_teja_asfaltica * $this->cantidad_teja_asfaltica +
+            $this->precio_madera_rh * $this->unidades_madera_rh +
+            
             $this->unidades_angulo * $this->precio_angulo +
             $this->unidades_cinta_doble_faz * $this->precio_cinta_doble_faz +
             $this->unidades_silicon_sellante * $this->precio_silicon_sellante +
             $this->unidades_silicon_color * $this->precio_silicon_color +
             $this->unidades_masking * $this->precio_masking +
-            $this->precio_vidrio * $this->cantidad_vidrio +
             $this->unidades_alumband * $this->precio_alumband +
             $this->unidades_tubo_pvc_3 * $this->precio_tubo_pvc_3 +
             $this->precio_codo_pvc_45_3 * $this->cantidad_codo_pvc_45_3 +
@@ -345,6 +350,7 @@ class PergolaVidrio extends PergolaBase
             $this->costo_documentacion;
 
         $this->total = $this->pvp_pergola;
+
     }
 
     public function obtenerDetalleMateriales(): array
@@ -365,14 +371,14 @@ class PergolaVidrio extends PergolaBase
             'Fleje Metalico' => 'fleje_metalico',
             'Aquaprotect' => 'aquaprotect',
             'Andamios' => 'andamios',
-            'T' => 't',
             'Ángulo' => 'angulo',
             'Cinta Doble Faz' => 'cinta_doble_faz',
             'Silicón Sellante' => 'silicon_sellante',
             'Silicón Color' => 'silicon_color',
             'Masking' => 'masking',
+            'Teja Asfáltica' => 'teja_asfaltica',
+            'Madera RH' => 'madera_rh',
             'Alumband' => 'alumband',
-            'Vidrio' => 'vidrio',
             'Tubo PVC 3”' => 'tubo_pvc_3',
             'Codo PVC 45° 3”' => 'codo_pvc_45_3',
             'Codo PVC 90° 3”' => 'codo_pvc_90_3',
@@ -394,7 +400,6 @@ class PergolaVidrio extends PergolaBase
             'tornillos_aluminio',
             'fleje_metalico',
             'aquaprotect',
-            'vidrio',
             'codo_pvc_45_3',
             'codo_pvc_90_3',
             'calipega',
@@ -404,6 +409,7 @@ class PergolaVidrio extends PergolaBase
             'n_bajantes',
             'aluco_bond',
             'anillos',
+            'teja_asfaltica'
         ];
 
         // Obtener todos los materiales con sus códigos desde la base de datos
@@ -416,8 +422,8 @@ class PergolaVidrio extends PergolaBase
             $precio = $this->{'precio_' . $clave} ?? 0;
 
             $total = in_array($clave, $usarCantidadParaTotal)
-            ? $cantidad * $precio
-            : $unidades * $precio;
+                ? $cantidad * $precio
+                : $unidades * $precio;
 
             // Buscar el código del material en la base de datos
             $codigoMaterial = $materialesConCodigos[$clave] ?? 'N/A';
@@ -468,7 +474,7 @@ class PergolaVidrio extends PergolaBase
         $pdf = Pdf::loadView('pdfs.cotizacion', $data);
         $path = 'pdf/cotizacion_' . now()->timestamp . '.pdf';
         $pdf->save(storage_path('app/public/' . $path));
-        
+
         return $path;
     }
 
@@ -482,7 +488,7 @@ class PergolaVidrio extends PergolaBase
 
         foreach ($allServices as $index => $service) {
             $inputs = $service['inputs'];
-            
+
             // Obtener nombre de la variante
             $variantName = 'Vidrio'; // Valor por defecto
             if (isset($service['variant_id'])) {
@@ -504,7 +510,7 @@ class PergolaVidrio extends PergolaBase
 
             // Agregar servicio de pérgola
             $servicios[] = [
-                'tipo' => 'Pergola de ' . $variantName,
+                'tipo' => 'Pergola de corintia RH - Teja Asfaltica ' . $variantName,
                 'medidas' => [
                     'medidaA' => $inputs['medidaA'] ?? 0,
                     'medidaB' => $inputs['medidaB'] ?? 0,
@@ -517,11 +523,11 @@ class PergolaVidrio extends PergolaBase
             // Agregar cuadrícula si aplica y tiene precio
             if (!empty($service['selected_cuadricula']) && $service['selected_cuadricula'] !== 'ninguna' && $cuadriculaPrecio > 0) {
                 $cuadriculaTipo = ucfirst(str_replace('_', ' ', $service['selected_cuadricula']));
-                
+
                 $medidaACuad = $inputs['medidaACuadricula'] ?? $inputs['medidaACuadriculaTrama'] ?? 0;
                 $medidaBCuad = $inputs['medidaBCuadricula'] ?? $inputs['medidaBCuadriculaTrama'] ?? 0;
                 $altoCuad = $inputs['altoCuadricula'] ?? $inputs['altoCuadriculaTrama'] ?? 0;
-                
+
                 $servicios[] = [
                     'tipo' => $cuadriculaTipo,
                     'medidas' => [
@@ -544,10 +550,10 @@ class PergolaVidrio extends PergolaBase
     private function processSingleServiceForPDF(): array
     {
         // Obtener nombre de la variante
-        $variantName = 'Vidrio'; // Valor por defecto
+        $variantName = 'RH - Teja Asfaltica'; // Valor por defecto
         if (isset($this->data['variant_id'])) {
             $variant = \App\Models\ServiceVariants::find($this->data['variant_id']);
-            $variantName = $variant ? $variant->name : 'Vidrio';
+            $variantName = $variant ? $variant->name : 'RH - Teja Asfaltica';
         }
 
         // Obtener precios del detalle del servicio si están disponibles
@@ -558,7 +564,7 @@ class PergolaVidrio extends PergolaBase
         // Preparar servicios cotizados
         $servicios = [
             [
-                'tipo' => 'Pergola de ' . $variantName,
+                'tipo' => 'Pergola de corintia ' . $variantName,
                 'medidas' => [
                     'medidaA' => $this->medidaA,
                     'medidaB' => $this->medidaB,
@@ -572,12 +578,12 @@ class PergolaVidrio extends PergolaBase
         // Agregar cuadrícula si fue seleccionada y tiene precio
         if (!empty($this->data['selected_cuadricula']) && $this->data['selected_cuadricula'] !== 'ninguna' && $cuadriculaPrecio > 0) {
             $cuadriculaTipo = ucfirst(str_replace('_', ' ', $this->data['selected_cuadricula']));
-            
+
             // Obtener medidas de cuadrícula
             $medidaACuad = $this->data['medidaACuadricula'] ?? $this->medidaACuadriculaTrama ?? 0;
             $medidaBCuad = $this->data['medidaBCuadricula'] ?? $this->medidaBCuadriculaTrama ?? 0;
             $altoCuad = $this->data['altoCuadricula'] ?? $this->altoCuadriculaTrama ?? 0;
-            
+
             $servicios[] = [
                 'tipo' => $cuadriculaTipo,
                 'medidas' => [
@@ -596,19 +602,19 @@ class PergolaVidrio extends PergolaBase
     public function obtenerPDFOrdenProduccion(): string
     {
         $materiales = $this->obtenerDetalleMateriales();
-        
+
         // Obtener información de columnas con colores si está disponible
         $columnasInfo = [];
         if (isset($this->data['columnas']) && is_array($this->data['columnas'])) {
             $columnasInfo = $this->data['columnas'];
         }
-        
+
         // Obtener colores de columnas desde los inputs
         $coloresColumnas = [];
         if (isset($this->data['colores_columnas']) && is_array($this->data['colores_columnas'])) {
             $coloresColumnas = $this->data['colores_columnas'];
         }
-        
+
         // Si no tenemos información detallada de columnas pero sí tenemos colores,
         // crear estructura básica con la información disponible
         if (empty($columnasInfo) && !empty($coloresColumnas)) {
@@ -630,7 +636,7 @@ class PergolaVidrio extends PergolaBase
                 $columna['numero'] = $columna['numero'] ?? ($index + 1);
             }
         }
-        
+
         $data = [
             'materiales' => $materiales,
             'medidas' => [
@@ -646,9 +652,9 @@ class PergolaVidrio extends PergolaBase
             'extras' => [
                 'estrategia_andamios' => $this->alquilar_andamios,
                 'nota_pago_por_dia' => $this->pagar_dia_pergola
-            ], 
+            ],
             'titulo' => [
-                'titulo_servicio' => 'Pergola de Vidrio'
+                'titulo_servicio' => 'Pergola con corintia RH - Teja Asfaltica'
             ],
             'cotizacion' => [
                 'numero_cotizacion' => $this->data['quotation_id'] ?? 'COT-' . now()->timestamp,

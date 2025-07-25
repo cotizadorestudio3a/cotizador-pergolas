@@ -242,10 +242,30 @@ class Cuadricula extends CuadriculaBase
                 'alto' => $this->altoCuadricula,
                 'area' => $this->area_cuadricula,
             ],
+            // ✅ Agregar información de cotización que la vista necesita
+            'cotizacion' => [
+                'numero_cotizacion' => $this->data['quotation_id'] ?? 'COT-' . now()->timestamp,
+                'fecha_emision' => now()->format('d/m/Y'),
+                'fecha_vencimiento' => now()->addDays(30)->format('d/m/Y'),
+                'fecha_orden' => now()->format('d/m/Y H:i:s'),
+            ],
+            // ✅ Agregar información del cliente si está disponible
+            'cliente' => [
+                'nombre' => $this->data['client_name'] ?? 'Cliente no especificado',
+                'dni' => $this->data['client_dni'] ?? '',
+                'telefono' => $this->data['client_phone'] ?? '',
+                'provincia' => $this->data['client_province'] ?? '',
+            ],
+            // ✅ Agregar información del título
+            'titulo' => [
+                'titulo_servicio' => 'Cuadrícula',
+            ],
         ];
+        
         $pdf = Pdf::loadView('pdfs.orden-produccion', $data);
 
-        $path = 'pdf/orden_produccion/cuadriculas/orden_produccion_' . now()->timestamp . '.pdf';
+        $cotizacionId = $this->data['quotation_id'] ?? 'COT-' . now()->timestamp;
+        $path = 'pdf/orden_produccion/cuadriculas/orden_produccion_cuadricula_' . $cotizacionId . '_' . now()->timestamp . '.pdf';
         $fullPath = storage_path('app/public/' . $path);
 
         // Crear la carpeta si no existe

@@ -157,6 +157,8 @@ class Index extends Component
             ['code' => 'CUADRICULA', 'name' => 'cuadricula', 'unit' => 'unidad', 'unit_price' => 10],
             ['code' => 'MANO_OBRA_CUADRICULA', 'name' => 'mano_de_obra_cuadricula', 'unit' => 'unidad', 'unit_price' => 3],
             ['code' => 'MANO_OBRA_CUADRICULA_TRAMA', 'name' => 'mano_de_obra_cuadricula_trama', 'unit' => 'unidad', 'unit_price' => 5],
+            ['code' => 'TEJA_ASFALTICA', 'name' => 'teja_asfaltica', 'unit' => 'unidad', 'unit_price' => 33],
+            ['code' => 'MADERA_RH', 'name' => 'madera_rh', 'unit' => 'unidad', 'unit_price' => 99.5],
         ];
 
         foreach ($defaultMaterials as $material) {

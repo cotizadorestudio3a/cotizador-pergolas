@@ -184,24 +184,30 @@
                 <span class="info-label">Área:</span>
                 <span>{{ number_format($medidas['area'], 2) }} m²</span>
             </div>
+            @if(isset($medidas['n_columnas']))
             <div class="info-row">
                 <span class="info-label">N° Columnas:</span>
                 <span>{{ $medidas['n_columnas'] }}</span>
             </div>
+            @endif
+            @if(isset($medidas['n_bajantes']))
             <div class="info-row">
                 <span class="info-label">N° Bajantes:</span>
                 <span>{{ $medidas['n_bajantes'] }}</span>
             </div>
-            @if($medidas['anillos'] > 0)
+            @endif
+            @if(isset($medidas['anillos']) && $medidas['anillos'] > 0)
             <div class="info-row">
                 <span class="info-label">Anillos:</span>
                 <span>{{ $medidas['anillos'] }}</span>
             </div>
             @endif
+            @if(isset($tiempo_estimado))
             <div class="info-row">
                 <span class="info-label">Tiempo Estimado:</span>
                 <span>{{ $tiempo_estimado['dias'] }} días ({{ $tiempo_estimado['meses'] }} meses)</span>
             </div>
+            @endif
         </div>
     </div>
 

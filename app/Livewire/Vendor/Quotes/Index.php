@@ -227,21 +227,37 @@ class Index extends Component
     public function generatePDFFiles()
     {
         try {
+            // ✅ DEBUGGING: Log inicio del proceso
+            Log::info('=== INICIO generatePDFFiles ===', [
+                'added_services_count' => count($this->added_services),
+                'client_id' => $this->client_id
+            ]);
+
             // Validar que tengamos toda la información necesaria
             $validationErrors = $this->validateQuotationData();
 
             if (!empty($validationErrors)) {
+                Log::error('Errores de validación:', $validationErrors);
                 foreach ($validationErrors as $field => $message) {
                     $this->addError($field, $message);
                 }
                 return;
             }
             
+            // ✅ DEBUGGING: Log servicios antes de procesar
+            Log::info('Servicios a procesar:', $this->added_services);
+            
             // Calcular totales con detalles de servicios
             $totals = $this->calculator->calculateTotal($this->added_services, $this->inputsPorServicio);
             
             // Guardar la cotización en la base de datos
             $quotation = $this->saveQuotationToDatabase();
+        
+            // ✅ DEBUGGING: Log antes de generar PDFs
+            Log::info('Generando PDFs con:', [
+                'quotation_id' => $quotation->id,
+                'services_detail' => $totals['services_detail']
+            ]);
         
             // Generar los PDFs con los detalles de servicios
             $this->pdfs_generados = $this->pdfGenerator->generateAllPDFs(
@@ -250,6 +266,9 @@ class Index extends Component
                 $quotation,
                 $totals['services_detail'] // Pasar detalles de servicios
             );
+
+            // ✅ DEBUGGING: Log PDFs generados
+            Log::info('PDFs generados:', $this->pdfs_generados);
 
             $this->step = 4;
             
@@ -260,6 +279,9 @@ class Index extends Component
             ]);
             
         } catch (\Exception $e) {
+            Log::error('Error en generatePDFFiles: ' . $e->getMessage(), [
+                'stack_trace' => $e->getTraceAsString()
+            ]);
             $this->addError('pdf_generation', 'Error al procesar la cotización: ' . $e->getMessage());
         }
     }
