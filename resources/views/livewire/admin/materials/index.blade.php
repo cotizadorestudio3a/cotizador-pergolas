@@ -19,15 +19,33 @@
             <div class="flex-1 max-w-md">
                 <flux:input wire:model.live="search" placeholder="Buscar materiales..." />
             </div>
-            
+
             <!-- Actions -->
-            <div class="flex gap-2">
-                <flux:button variant="outline" wire:click="initializeDefaultMaterials">
-                    Inicializar Materiales
+            <div class="flex flex-col gap-3 items-start sm:items-center">
+
+                <flux:button variant="outline" wire:click="initializeDefaultMaterials"
+                    class="flex text-gray-700 border-gray-300 hover:bg-gray-50">
+                   Inicializar Materiales
                 </flux:button>
+
+                <div class="text-xs text-gray-500 max-w-xs">
+                    <span class="inline-flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Reemplazará todos los materiales existentes.
+                    </span>
+                </div>
+
+                <!--
                 <flux:button variant="primary" wire:click="openCreateModal">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
                     Nuevo Material
                 </flux:button>
+                -->
             </div>
         </div>
     </div>
@@ -77,10 +95,11 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end gap-2">
-                                    <flux:button variant="ghost" size="sm" wire:click="openEditModal({{ $material->id }})">
+                                    <flux:button variant="ghost" size="sm"
+                                        wire:click="openEditModal({{ $material->id }})">
                                         Editar
                                     </flux:button>
-                                    <flux:button variant="danger" size="sm" 
+                                    <flux:button variant="danger" size="sm"
                                         wire:click="deleteMaterial({{ $material->id }})"
                                         wire:confirm="¿Estás seguro de eliminar este material?">
                                         Eliminar
@@ -92,11 +111,14 @@
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                                 <div class="flex flex-col items-center">
-                                    <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                    <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                     </svg>
                                     <p class="text-lg font-medium text-gray-900 mb-2">No hay materiales</p>
-                                    <p class="text-gray-500 mb-4">Comienza agregando algunos materiales para gestionar sus precios</p>
+                                    <p class="text-gray-500 mb-4">Comienza agregando algunos materiales para gestionar
+                                        sus precios</p>
                                     <flux:button variant="primary" wire:click="initializeDefaultMaterials">
                                         Inicializar Materiales por Defecto
                                     </flux:button>
@@ -107,9 +129,9 @@
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Pagination -->
-        @if($materials->hasPages())
+        @if ($materials->hasPages())
             <div class="px-6 py-3 border-t border-gray-200">
                 {{ $materials->links() }}
             </div>
@@ -120,7 +142,7 @@
     <flux:modal wire:model="showCreateModal" class="max-w-md">
         <div class="p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Crear Nuevo Material</h3>
-            
+
             <form wire:submit="createMaterial" class="space-y-4">
                 <div>
                     <flux:field>
@@ -129,15 +151,13 @@
                         <flux:error name="code" />
                     </flux:field>
                 </div>
-                
+
                 <div>
-                    <flux:field>
-                        <flux:label>Nombre del Material</flux:label>
-                        <flux:input wire:model="name" placeholder="ej: viga_principal" />
-                        <flux:error name="name" />
-                    </flux:field>
+                    <flux:label>Nombre del Material</flux:label>
+                    <flux:input disabled wire:model="name" placeholder="ej: viga_principal" />
+                    <flux:error name="name" />
                 </div>
-                
+
                 <div>
                     <flux:field>
                         <flux:label>Unidad</flux:label>
@@ -145,15 +165,16 @@
                         <flux:error name="unit" />
                     </flux:field>
                 </div>
-                
+
                 <div>
                     <flux:field>
                         <flux:label>Precio Unitario ($)</flux:label>
-                        <flux:input wire:model="unit_price" type="number" step="0.01" min="0" placeholder="0.00" />
+                        <flux:input wire:model="unit_price" type="number" step="0.01" min="0"
+                            placeholder="0.00" />
                         <flux:error name="unit_price" />
                     </flux:field>
                 </div>
-                
+
                 <div class="flex justify-end gap-2 pt-4">
                     <flux:button variant="ghost" wire:click="closeCreateModal">
                         Cancelar
@@ -170,7 +191,7 @@
     <flux:modal wire:model="showEditModal" class="max-w-md">
         <div class="p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Editar Material</h3>
-            
+
             <form wire:submit="updateMaterial" class="space-y-4">
                 <div>
                     <flux:field>
@@ -179,15 +200,15 @@
                         <flux:error name="code" />
                     </flux:field>
                 </div>
-                
+
                 <div>
                     <flux:field>
                         <flux:label>Nombre del Material</flux:label>
-                        <flux:input wire:model="name" placeholder="ej: viga_principal" />
+                        <flux:input readonly disabled wire:model="name" placeholder="ej: viga_principal" />
                         <flux:error name="name" />
                     </flux:field>
                 </div>
-                
+
                 <div>
                     <flux:field>
                         <flux:label>Unidad</flux:label>
@@ -195,15 +216,16 @@
                         <flux:error name="unit" />
                     </flux:field>
                 </div>
-                
+
                 <div>
                     <flux:field>
                         <flux:label>Precio Unitario ($)</flux:label>
-                        <flux:input wire:model="unit_price" type="number" step="0.01" min="0" placeholder="0.00" />
+                        <flux:input wire:model="unit_price" type="number" step="0.01" min="0"
+                            placeholder="0.00" />
                         <flux:error name="unit_price" />
                     </flux:field>
                 </div>
-                
+
                 <div class="flex justify-end gap-2 pt-4">
                     <flux:button variant="ghost" wire:click="closeEditModal">
                         Cancelar

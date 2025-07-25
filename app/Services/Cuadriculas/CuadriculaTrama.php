@@ -152,14 +152,18 @@ class CuadriculaTrama extends CuadriculaBase
 
     private function definirPreciosCuadricula()
     {
-
-        $materialPrices = Material::getAllPricesArray();
+        try {
+            $materialPrices = Material::getAllPricesArray();
+        } catch (\Exception $e) {
+            // Si hay error accediendo a la BD, usar precios por defecto
+            $materialPrices = [];
+        }
 
         $this->precio_cuadricula = $materialPrices['cuadricula'] ?? 10;
         $this->precio_tornillos_cuadricula = $materialPrices['tornillo_cuadricula'] ?? 0.06;
-        $this->precio_tornillos_t = $material_prices['tornillos_t_cuadricula'] ?? 0.06;
-        $this->precio_t_cuadricula = $material_prices['t'] ?? 5.42;
-        $this->precio_mano_de_obra_cuadricula = $material_prices['mano_de_obra_cuadricula_trama'] ?? 5;
+        $this->precio_tornillos_t = $materialPrices['tornillos_t_cuadricula'] ?? 0.06;
+        $this->precio_t_cuadricula = $materialPrices['t'] ?? 5.42;
+        $this->precio_mano_de_obra_cuadricula = $materialPrices['mano_de_obra_cuadricula_trama'] ?? 5;
     }
 
     private function obtenerDetalleMateriales()
@@ -207,10 +211,12 @@ class CuadriculaTrama extends CuadriculaBase
 
     private function obtenerCodigoMaterial(string $clave): string
     {
-        static $materialesConCodigos = null;
-
-        if (!$materialesConCodigos) {
+        // ✅ Eliminamos variable estática para evitar contaminación de datos entre instancias
+        try {
             $materialesConCodigos = Material::pluck('code', 'name')->toArray();
+        } catch (\Exception $e) {
+            // Si falla la BD, usar códigos por defecto
+            $materialesConCodigos = [];
         }
 
         // Excepciones manuales
@@ -265,7 +271,13 @@ class CuadriculaTrama extends CuadriculaBase
         $pdf = Pdf::loadView('pdfs.orden-produccion', $data);
 
         $cotizacionId = $this->data['quotation_id'] ?? 'COT-' . now()->timestamp;
-        $path = 'pdf/orden_produccion/cuadriculas/orden_produccion_cuadricula_trama_' . $cotizacionId . '_' . now()->timestamp . '.pdf';
+        
+        // ✅ FIX: Agregar identificadores únicos para evitar sobreescritura de archivos
+        $serviceIndex = $this->data['debug_service_index'] ?? 'S';
+        $variantId = $this->data['debug_variant_id'] ?? 'V';
+        $uniqueId = now()->format('YmdHis') . '_' . microtime(true) * 10000;
+        
+        $path = 'pdf/orden_produccion/cuadriculas/orden_produccion_cuadricula_trama_' . $cotizacionId . '_servicio_' . $serviceIndex . '_variante_' . $variantId . '_' . $uniqueId . '.pdf';
         $fullPath = storage_path('app/public/' . $path);
 
         // Crear la carpeta si no existe

@@ -18,6 +18,7 @@
             <flux:input label="DNI" wire:model="dni" type="number" placeholder="12345678" />
             <flux:input label="Telefono" wire:model="phone" type="number" placeholder="12345678" />
             <flux:select label="Provincia" wire:model="province" placeholder="Seleccione una provincia">
+            <option value="">Seleccione una provincia</option>
                 @foreach ($provinces as $prov)
                     <flux:select.option value="{{ $prov }}">{{ $prov }}</flux:select.option>
                 @endforeach

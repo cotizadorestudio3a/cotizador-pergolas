@@ -4,6 +4,7 @@ namespace App\Services\Cuadriculas;
 
 use App\Services\Cuadriculas\CuadriculaBase;
 use App\Services\Cuadriculas\CuadriculaTrama;
+use Exception;
 
 class CuadriculaFactory
 {
@@ -12,7 +13,7 @@ class CuadriculaFactory
         return match ($tipo) {
             'cuadricula' => new Cuadricula($data),
             'cuadricula_trama' => new CuadriculaTrama($data),
-            default => throw new Exception("Tipo de cuadricula desconocido")
+            default => throw new Exception("Tipo de cuadricula desconocido: $tipo")
         };
     }
 }

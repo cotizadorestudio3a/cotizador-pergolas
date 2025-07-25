@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class QuotationItem extends Model
 {
@@ -49,5 +50,13 @@ class QuotationItem extends Model
     public function serviceVariant(): BelongsTo
     {
         return $this->belongsTo(ServiceVariants::class, 'service_variant_id');
+    }
+
+    /**
+     * Relación con los PDFs de producción de este item
+     */
+    public function pdfs(): HasMany
+    {
+        return $this->hasMany(QuotationPdf::class);
     }
 }

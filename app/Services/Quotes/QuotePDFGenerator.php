@@ -4,6 +4,8 @@ namespace App\Services\Quotes;
 
 use App\Services\Cuadriculas\CuadriculaFactory;
 use App\Services\Pergolas\PergolaFactory;
+use App\Models\ServiceVariants;
+use App\Models\QuotationPdf;
 use Illuminate\Support\Facades\Log;
 
 class QuotePDFGenerator
@@ -90,9 +92,23 @@ class QuotePDFGenerator
         $pergola = PergolaFactory::crear($firstService['variant_id'], $inputs);
         $pergola->calcular();
         
+        $pdfPath = $pergola->obtenerPDFCotizacion();
+        
+        // ✅ Guardar el PDF comercial en la base de datos
+        $this->savePdfToDatabase(
+            pdfPath: $pdfPath,
+            title: 'Cotización Comercial',
+            pdfType: 'comercial',
+            quotation: $quotation,
+            quotationItemId: null, // El PDF comercial no está asociado a un item específico
+            serviceVariantId: $firstService['variant_id'],
+            variantName: 'Cotización Completa',
+            serviceIndex: null
+        );
+        
         return [
             'titulo' => 'Cotización Comercial',
-            'path' => $pergola->obtenerPDFCotizacion(),
+            'path' => $pdfPath,
         ];
     }
 
@@ -134,9 +150,22 @@ class QuotePDFGenerator
         $inputs['debug_variant_id'] = $servicio['variant_id'];
         $inputs['debug_service_index'] = $servicio['input_index'];
 
+        // ✅ Obtener el nombre de la variante para el título
+        $variantName = 'Variante ' . ($servicio['variant_id'] ?? 'N/A');
+        try {
+            if (isset($servicio['variant_id'])) {
+                $variant = ServiceVariants::find($servicio['variant_id']);
+                $variantName = $variant ? $variant->name : 'Variante ' . $servicio['variant_id'];
+            }
+        } catch (\Exception $e) {
+            // Si falla la consulta, usar el ID como fallback
+            $variantName = 'Variante ' . ($servicio['variant_id'] ?? 'N/A');
+        }
+
         // ✅ DEBUGGING CRÍTICO: Loggear qué variant_id se está usando
         Log::info('Generando PDF de pérgola:', [
             'variant_id' => $servicio['variant_id'],
+            'variant_name' => $variantName,
             'service_index' => $servicio['input_index'],
             'selected_cuadricula' => $servicio['selected_cuadricula'] ?? 'ninguna',
             'factory_class' => 'PergolaFactory::crear(' . $servicio['variant_id'] . ')'
@@ -149,9 +178,23 @@ class QuotePDFGenerator
         // ✅ Log de qué clase se creó realmente
         Log::info('Clase de pérgola creada: ' . get_class($pergola));
         
+        $pergolaPdfPath = $pergola->obtenerPDFOrdenProduccion();
+        
+        // ✅ Guardar el PDF de pérgola en la base de datos
+        $this->savePdfToDatabase(
+            pdfPath: $pergolaPdfPath,
+            title: 'Orden Producción Pérgola - ' . $variantName,
+            pdfType: 'produccion_pergola',
+            quotation: $quotation,
+            quotationItemId: $this->findQuotationItemId($quotation, $servicio),
+            serviceVariantId: $servicio['variant_id'],
+            variantName: $variantName,
+            serviceIndex: $servicio['input_index']
+        );
+        
         $pdfs[] = [
-            'titulo' => 'Orden Producción Pérgola - Variante ' . ($servicio['variant_id'] ?? 'N/A'),
-            'path' => $pergola->obtenerPDFOrdenProduccion(),
+            'titulo' => 'Orden Producción Pérgola - ' . $variantName,
+            'path' => $pergolaPdfPath,
         ];
 
         // ✅ Generar PDF de cuadrícula si aplica (con datos INDEPENDIENTES)
@@ -172,9 +215,23 @@ class QuotePDFGenerator
                 
                 Log::info('Clase de cuadrícula creada: ' . get_class($cuadricula));
                 
+                $cuadriculaPdfPath = $cuadricula->obtenerPDFOrdenProduccion();
+                
+                // ✅ Guardar el PDF de cuadrícula en la base de datos
+                $this->savePdfToDatabase(
+                    pdfPath: $cuadriculaPdfPath,
+                    title: 'Orden Producción Cuadrícula - ' . $variantName,
+                    pdfType: 'produccion_cuadricula',
+                    quotation: $quotation,
+                    quotationItemId: $this->findQuotationItemId($quotation, $servicio),
+                    serviceVariantId: $servicio['variant_id'],
+                    variantName: $variantName,
+                    serviceIndex: $servicio['input_index']
+                );
+                
                 $pdfs[] = [
-                    'titulo' => 'Orden Producción Cuadrícula - Variante ' . ($servicio['variant_id'] ?? 'N/A'),
-                    'path' => $cuadricula->obtenerPDFOrdenProduccion(),
+                    'titulo' => 'Orden Producción Cuadrícula - ' . $variantName,
+                    'path' => $cuadriculaPdfPath,
                 ];
             } catch (\Exception $e) {
                 // ✅ Log del error para debugging
@@ -197,5 +254,67 @@ class QuotePDFGenerator
         }
 
         return $pdfs;
+    }
+
+    /**
+     * Guarda la información del PDF en la base de datos
+     */
+    private function savePdfToDatabase(
+        string $pdfPath, 
+        string $title, 
+        string $pdfType, 
+        $quotation = null, 
+        $quotationItemId = null, 
+        $serviceVariantId = null, 
+        $variantName = null, 
+        $serviceIndex = null
+    ): QuotationPdf {
+        // Obtener información del archivo
+        $fullPath = storage_path('app/public/' . $pdfPath);
+        $fileSize = file_exists($fullPath) ? filesize($fullPath) : null;
+        $fileName = basename($pdfPath);
+
+        // Crear el registro en la base de datos
+        $quotationPdf = QuotationPdf::create([
+            'quotation_id' => $quotation ? $quotation->id : null,
+            'quotation_item_id' => $quotationItemId,
+            'pdf_type' => $pdfType,
+            'title' => $title,
+            'file_path' => $pdfPath,
+            'file_name' => $fileName,
+            'service_variant_id' => $serviceVariantId,
+            'variant_name' => $variantName,
+            'service_index' => $serviceIndex,
+            'file_size' => $fileSize,
+            'generated_at' => now(),
+            'status' => 'generated'
+        ]);
+
+        Log::info('PDF guardado en BD:', [
+            'pdf_id' => $quotationPdf->id,
+            'title' => $title,
+            'type' => $pdfType,
+            'path' => $pdfPath,
+            'file_size' => $fileSize
+        ]);
+
+        return $quotationPdf;
+    }
+
+    /**
+     * Encuentra el ID del QuotationItem correspondiente al servicio
+     */
+    private function findQuotationItemId($quotation, array $servicio): ?int
+    {
+        if (!$quotation) {
+            return null;
+        }
+
+        // Buscar el quotation_item que corresponde a este servicio
+        $quotationItem = $quotation->quotationItems()
+            ->where('service_variant_id', $servicio['variant_id'])
+            ->first();
+
+        return $quotationItem ? $quotationItem->id : null;
     }
 }

@@ -117,6 +117,9 @@ class Index extends Component
 
     public function initializeDefaultMaterials()
     {
+        // Limpiar toda la tabla de materiales
+        Material::truncate();
+        
         $defaultMaterials = [
             ['code' => 'VIG_PRIN', 'name' => 'viga_principal_sujecion', 'unit' => 'unidad', 'unit_price' => 100],
             ['code' => 'VIG_SEC', 'name' => 'viga_secundaria', 'unit' => 'unidad', 'unit_price' => 100],
@@ -166,10 +169,7 @@ class Index extends Component
         ];
 
         foreach ($defaultMaterials as $material) {
-            Material::firstOrCreate(
-                ['name' => $material['name']],
-                $material
-            );
+            Material::create($material);
         }
 
         session()->flash('success', 'Materiales por defecto inicializados exitosamente');

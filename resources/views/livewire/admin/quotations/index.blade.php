@@ -268,7 +268,7 @@
                                         @endif
                                     </div>
                                     <div class="text-right">
-                                        <p class="font-medium">${{ number_format($item->total, 2) }}</p>
+                                        <p class="font-medium"></p>
                                     </div>
                                 </div>
                                 

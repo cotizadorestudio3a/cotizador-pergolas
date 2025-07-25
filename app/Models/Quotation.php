@@ -50,10 +50,72 @@ class Quotation extends Model
     }
 
     /**
+     * Relación con los PDFs de la cotización
+     */
+    public function pdfs(): HasMany
+    {
+        return $this->hasMany(QuotationPdf::class);
+    }
+
+    /**
+     * Alias para la relación de PDFs
+     */
+    public function quotationPdfs(): HasMany
+    {
+        return $this->pdfs();
+    }
+
+    /**
+     * Obtener solo PDFs comerciales
+     */
+    public function commercialPdfs(): HasMany
+    {
+        return $this->pdfs()->commercial();
+    }
+
+    /**
+     * Obtener solo PDFs de producción
+     */
+    public function productionPdfs(): HasMany
+    {
+        return $this->pdfs()->production();
+    }
+
+    /**
      * Alias para quotationItems (para compatibilidad)
      */
     public function items(): HasMany
     {
         return $this->quotationItems();
+    }
+
+    /**
+     * Obtener todos los PDFs organizados por tipo
+     */
+    public function getPdfsGroupedByType(): array
+    {
+        $pdfs = $this->pdfs()->orderBy('generated_at', 'desc')->get();
+        
+        return [
+            'comercial' => $pdfs->where('pdf_type', 'comercial'),
+            'produccion_pergola' => $pdfs->where('pdf_type', 'produccion_pergola'),
+            'produccion_cuadricula' => $pdfs->where('pdf_type', 'produccion_cuadricula'),
+        ];
+    }
+
+    /**
+     * Obtener el último PDF comercial generado
+     */
+    public function getLatestCommercialPdf(): ?QuotationPdf
+    {
+        return $this->commercialPdfs()->latest('generated_at')->first();
+    }
+
+    /**
+     * Verificar si tiene PDFs generados
+     */
+    public function hasPdfs(): bool
+    {
+        return $this->pdfs()->exists();
     }
 }

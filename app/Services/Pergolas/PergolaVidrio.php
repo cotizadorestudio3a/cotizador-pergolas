@@ -671,8 +671,13 @@ class PergolaVidrio extends PergolaBase
         $pdf = Pdf::loadView('pdfs.orden-produccion', $data);
 
         $cotizacionId = $this->data['quotation_id'] ?? 'COT-' . now()->timestamp;
+        
+        // ✅ FIX: Agregar identificadores únicos para evitar sobreescritura de archivos
+        $serviceIndex = $this->data['debug_service_index'] ?? 'S';
+        $variantId = $this->data['debug_variant_id'] ?? 'V';
+        $uniqueId = now()->format('YmdHis') . '_' . microtime(true) * 10000;
 
-        $path = 'pdf/orden_produccion/pergolas/orden_produccion_' . $cotizacionId . '_' . now()->timestamp . '.pdf';
+        $path = 'pdf/orden_produccion/pergolas/orden_produccion_' . $cotizacionId . '_servicio_' . $serviceIndex . '_variante_' . $variantId . '_' . $uniqueId . '.pdf';
         $fullPath = storage_path('app/public/' . $path);
 
         // Crear la carpeta si no existe

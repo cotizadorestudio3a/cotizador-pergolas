@@ -24,7 +24,16 @@ class Create extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'max:255', 'lowercase', 'email', 'unique:' . User::class],
-        ]);
+        ], 
+            [
+                'email.unique' => 'El correo electrónico ya está en uso por otro usuario.',
+                'email.lowercase' => 'El correo electrónico debe estar en minúsculas.',
+                'email.email' => 'El correo electrónico debe ser una dirección válida.',
+                'name.required' => 'El nombre es obligatorio.',
+                'name.string' => 'El nombre debe ser una cadena de texto.',
+                'name.max' => 'El nombre no puede tener más de 255 caracteres.',
+            ]
+    );
 
         // Generar contraseña aleatoria
         $plainPassword = Str::random(10);

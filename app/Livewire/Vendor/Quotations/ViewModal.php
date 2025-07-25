@@ -18,7 +18,9 @@ class ViewModal extends Component
         $this->quotation = Quotation::with([
             'client',
             'quotationItems.service',
-            'quotationItems.serviceVariant'
+            'quotationItems.serviceVariant',
+            'pdfs.quotationItem.service',
+            'pdfs.quotationItem.serviceVariant'
         ])
         ->where('user_id', Auth::id())
         ->find($quotationId);
