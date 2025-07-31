@@ -46,14 +46,15 @@
                         <div class="flex gap-1 items-center">
                             @for($i = 0; $i < min((int)$inputsPorServicio[$index]['n_columnas'], 10); $i++)
                                 @php
-                                    $columnaColor = $inputsPorServicio[$index]['colores_columnas'][$i] ?? $selectedColor ?? 'azul';
+                                    $columnaColor = $inputsPorServicio[$index]['colores_columnas'][$i] ?? $selectedColor ?? 'roble';
                                     $colorClass = match($columnaColor) {
-                                        'azul' => 'bg-blue-500',
+                                        'roble' => 'bg-amber-700',
+                                        'nogal' => 'bg-amber-900',
+                                        'eucalipto' => 'bg-green-700',
                                         'negro' => 'bg-black',
                                         'blanco' => 'bg-white border-2 border-gray-300',
-                                        'gris' => 'bg-gray-400',
-                                        'rojo' => 'bg-red-500',
-                                        default => 'bg-blue-500'
+                                        'natural' => 'bg-gray-400',
+                                        default => 'bg-amber-700'
                                     };
                                 @endphp
                                 <button type="button" 
@@ -107,38 +108,45 @@
             
             <div class="space-y-3">
                 <button type="button" 
-                    wire:click="cambiarColorColumna('azul')"
+                    wire:click="cambiarColorColumna('roble')"
                     class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border">
-                    <div class="w-6 h-6 bg-blue-500 rounded-full"></div>
-                    <span class="text-gray-700 font-medium">Azul</span>
+                    <div class="w-6 h-6 bg-amber-700 rounded-full"></div>
+                    <span class="text-gray-700 font-medium">Roble (41)</span>
+                </button>
+                
+                <button type="button" 
+                    wire:click="cambiarColorColumna('nogal')"
+                    class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border">
+                    <div class="w-6 h-6 bg-amber-900 rounded-full"></div>
+                    <span class="text-gray-700 font-medium">Nogal (42)</span>
+                </button>
+                
+                <button type="button" 
+                    wire:click="cambiarColorColumna('eucalipto')"
+                    class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border">
+                    <div class="w-6 h-6 bg-green-700 rounded-full"></div>
+                    <span class="text-gray-700 font-medium">Eucalipto (50)</span>
                 </button>
                 
                 <button type="button" 
                     wire:click="cambiarColorColumna('negro')"
                     class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border">
                     <div class="w-6 h-6 bg-black rounded-full"></div>
-                    <span class="text-gray-700 font-medium">Negro</span>
+                    <span class="text-gray-700 font-medium">Negro (04)</span>
                 </button>
                 
                 <button type="button" 
                     wire:click="cambiarColorColumna('blanco')"
                     class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border">
                     <div class="w-6 h-6 bg-white border-2 border-gray-300 rounded-full"></div>
-                    <span class="text-gray-700 font-medium">Blanco</span>
+                    <span class="text-gray-700 font-medium">Blanco (20)</span>
                 </button>
                 
                 <button type="button" 
-                    wire:click="cambiarColorColumna('gris')"
+                    wire:click="cambiarColorColumna('natural')"
                     class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border">
-                    <div class="w-6 h-6 bg-gray-400 rounded-full"></div>
-                    <span class="text-gray-700 font-medium">Gris</span>
-                </button>
-                
-                <button type="button" 
-                    wire:click="cambiarColorColumna('rojo')"
-                    class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border">
-                    <div class="w-6 h-6 bg-red-500 rounded-full"></div>
-                    <span class="text-gray-700 font-medium">Rojo</span>
+                    <div class="w-6 h-6 bg-gray-400 rounded-full border border-gray-300"></div>
+                    <span class="text-gray-700 font-medium">Natural (02)</span>
                 </button>
             </div>
             

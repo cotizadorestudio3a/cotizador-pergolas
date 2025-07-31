@@ -174,13 +174,6 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex space-x-2">
-                                            <flux:button 
-                                                wire:click="$dispatch('openViewModal', { quotationId: {{ $quotation->id }} })"
-                                                size="sm" 
-                                                variant="ghost"
-                                            >
-                                                Ver
-                                            </flux:button>
                                             
                                             <flux:button 
                                                 wire:click="$dispatch('openViewModal', { quotationId: {{ $quotation->id }} })"

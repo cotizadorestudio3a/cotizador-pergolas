@@ -45,4 +45,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
 @vite(['resources/css/app.css'])
-@fluxAppearance
+
+<!-- Deshabilitar completamente el dark mode -->
+
+<!-- Forzar modo claro siempre (Dark mode deshabilitado) -->
+<script>
+    // Deshabilitar completamente el dark mode
+    window.Flux = {
+        applyAppearance (appearance) {
+            // Siempre aplicar modo claro, ignorar preferencias
+            document.documentElement.classList.remove('dark');
+            window.localStorage.setItem('flux.appearance', 'light');
+        }
+    }
+    
+    // Forzar modo claro inmediatamente
+    document.documentElement.classList.remove('dark');
+    window.localStorage.setItem('flux.appearance', 'light');
+</script>

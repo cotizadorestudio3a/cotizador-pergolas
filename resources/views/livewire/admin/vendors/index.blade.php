@@ -10,7 +10,7 @@
         <div class="mb-4 mt-8 flex flex-row gap-4 items-center">
             <livewire:admin.vendors.create @vendor-created="$refresh"/>
             <x-error-info-message class="me-3 text-red-500" on="error-occurred">
-                Error al eliminar el <strong x-text="params"></strong>.
+                <strong x-text="error"></strong>
             </x-error-info-message>
 
 

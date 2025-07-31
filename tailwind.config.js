@@ -17,4 +17,6 @@ export default {
             },
         },
     },
+    darkMode: 'false',
+
 };

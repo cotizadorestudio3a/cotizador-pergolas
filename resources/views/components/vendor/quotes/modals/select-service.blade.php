@@ -67,32 +67,38 @@
                                         label="Seleccione un color">
                                         <div
                                             class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
-                                            <flux:radio value="azul" label="Azul" checked />
-                                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                            <flux:radio value="roble" label="Roble (41)" checked />
+                                            <div class="w-3 h-3 bg-amber-700 rounded-full"></div>
                                         </div>
 
                                         <div
                                             class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
-                                            <flux:radio value="negro" label="Negro" />
+                                            <flux:radio value="nogal" label="Nogal (42)" />
+                                            <div class="w-3 h-3 bg-amber-900 rounded-full"></div>
+                                        </div>
+
+                                        <div
+                                            class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
+                                            <flux:radio value="eucalipto" label="Eucalipto (50)" />
+                                            <div class="w-3 h-3 bg-green-700 rounded-full"></div>
+                                        </div>
+
+                                        <div
+                                            class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
+                                            <flux:radio value="negro" label="Negro (04)" />
                                             <div class="w-3 h-3 bg-black rounded-full"></div>
                                         </div>
 
                                         <div
                                             class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
-                                            <flux:radio value="blanco" label="Blanco" />
+                                            <flux:radio value="blanco" label="Blanco (20)" />
                                             <div class="w-3 h-3 bg-white rounded-full border border-gray-300"></div>
                                         </div>
 
                                         <div
                                             class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
-                                            <flux:radio value="gris" label="Gris" />
-                                            <div class="w-3 h-3 bg-gray-300 rounded-full border border-gray-300"></div>
-                                        </div>
-
-                                        <div
-                                            class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 transition-colors">
-                                            <flux:radio value="rojo" label="Rojo" />
-                                            <div class="w-3 h-3 bg-red-500 rounded-full border border-gray-300"></div>
+                                            <flux:radio value="natural" label="Natural (02)" />
+                                            <div class="w-3 h-3 bg-gray-400 rounded-full border border-gray-300"></div>
                                         </div>
                                     </flux:radio.group>
                                 </div>

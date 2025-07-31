@@ -43,6 +43,7 @@
             padding: 15px;
             border-radius: 5px;
             background-color: #f9f9f9;
+            margin-top: 12px;   
         }
 
         .info-box h3 {
@@ -224,33 +225,37 @@
             <tbody>
                 @foreach($columnas as $index => $columna)
                 @php
-                    $color = $columna['color'] ?? 'azul';
+                    $color = $columna['color'] ?? 'roble';
                     
                     // Mapear color a texto
                     switch($color) {
-                        case 'azul':
-                            $colorTexto = 'Azul';
-                            $colorHex = '#3B82F6';
+                        case 'roble':
+                            $colorTexto = 'Roble (41)';
+                            $colorHex = '#B45309';
+                            break;
+                        case 'nogal':
+                            $colorTexto = 'Nogal (42)';
+                            $colorHex = '#92400E';
+                            break;
+                        case 'eucalipto':
+                            $colorTexto = 'Eucalipto (50)';
+                            $colorHex = '#047857';
                             break;
                         case 'negro':
-                            $colorTexto = 'Negro';
+                            $colorTexto = 'Negro (04)';
                             $colorHex = '#000000';
                             break;
                         case 'blanco':
-                            $colorTexto = 'Blanco';
+                            $colorTexto = 'Blanco (20)';
                             $colorHex = '#FFFFFF';
                             break;
-                        case 'gris':
-                            $colorTexto = 'Gris';
-                            $colorHex = '#6B7280';
-                            break;
-                        case 'rojo':
-                            $colorTexto = 'Rojo';
-                            $colorHex = '#EF4444';
+                        case 'natural':
+                            $colorTexto = 'Natural (02)';
+                            $colorHex = '#9CA3AF';
                             break;
                         default:
-                            $colorTexto = 'Azul';
-                            $colorHex = '#3B82F6';
+                            $colorTexto = 'Roble (41)';
+                            $colorHex = '#B45309';
                             break;
                     }
                 @endphp

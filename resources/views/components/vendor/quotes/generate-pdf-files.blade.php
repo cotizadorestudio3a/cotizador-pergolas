@@ -116,16 +116,23 @@
         </div>
     </div>
 
-    <div class="flex items-center justify-end mt-6">
-        <flux:button variant='ghost'>
-            <span class="flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
+    <div class="flex items-center justify-between mt-6">
+        <a href="{{ route('vendor.quotations.index') }}" 
+           class="inline-flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Ver historial de cotizaciones</span>
+        </a>
 
-                <span>Volver al panel de administración</span>
-
-            </span>
-        </flux:button>
+        <a href="{{ route('vendor.quotes.index') }}" 
+           class="inline-flex items-center space-x-2 px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors font-semibold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            <span>Realizar nueva cotización</span>
+        </a>
     </div>
 </div>

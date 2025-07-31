@@ -3,13 +3,25 @@
 ])
 
 <div
-    x-data="{ shown: false, timeout: null }"
+    x-data="{ shown: false, timeout: null, error: '' }"
     x-init="@this.on('{{ $on }}', (e) => {
-    error = e; //parametro enviado desde la clase
-    clearTimeout(timeout);
-    shown = true;
-    timeout = setTimeout(() => {
-    shown = false }, 6000); })"
+        // Manejar diferentes tipos de eventos
+        if (typeof e === 'string') {
+            error = e;
+        } else if (e && e.message) {
+            error = e.message;
+        } else if (e && typeof e === 'object') {
+            error = e.toString();
+        } else {
+            error = 'Ha ocurrido un error';
+        }
+        
+        clearTimeout(timeout);
+        shown = true;
+        timeout = setTimeout(() => {
+            shown = false;
+        }, 6000);
+    })"
     x-show.transition.out.opacity.duration.1500ms="shown"
     x-transition:leave.opacity.duration.1500ms
     style="display: none"

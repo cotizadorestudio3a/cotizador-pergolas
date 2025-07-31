@@ -99,11 +99,14 @@
                                         wire:click="openEditModal({{ $material->id }})">
                                         Editar
                                     </flux:button>
+
+                                    <!--
                                     <flux:button variant="danger" size="sm"
                                         wire:click="deleteMaterial({{ $material->id }})"
                                         wire:confirm="¿Estás seguro de eliminar este material?">
                                         Eliminar
                                     </flux:button>
+                                    -->
                                 </div>
                             </td>
                         </tr>
