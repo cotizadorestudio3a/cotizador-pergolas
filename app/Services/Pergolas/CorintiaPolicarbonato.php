@@ -149,6 +149,7 @@ class CorintiaPolicarbonato extends PergolaBase
     {
 
         parent::__construct($data);
+
         $this->medidaA = max(0.1, (float)($data['medidaA'] ?? 0.1));
         $this->medidaB = max(0.1, (float)($data['medidaB'] ?? 0.1));
         $this->alto = max(0.1, (float)($data['alto'] ?? 0.1));
@@ -177,7 +178,7 @@ class CorintiaPolicarbonato extends PergolaBase
         $mayor = max($this->medidaA, $this->medidaB);
         $menor = min($this->medidaA, $this->medidaB);
 
-        $this->numeroVigas = ceil($mayor / 0.65) + 1;
+        $this->numeroVigas = ceil($mayor / 0.7) + 1;
         $this->largoVigas = $menor;
         $this->largoVigaPrincipal = $mayor;
         $this->area = $this->medidaA * $this->medidaB;
@@ -189,12 +190,15 @@ class CorintiaPolicarbonato extends PergolaBase
 
         $this->aumento_desperdicio_columnas = ($this->alto > 4 && $this->alto < 6.4)
             ? -$this->alto + 6.4 : 0;
+    
     }
 
     private function calcularCantidades()
     {
         $this->cantidad_viga_principal_sujecion = $this->largoVigaPrincipal * 3;
+        
         $this->cantidad_viga_secundaria = ($this->aumento_desperdicio_vigas + $this->largoVigas) * $this->numeroVigas;
+
         $this->cantidad_columna = $this->n_columnas * $this->alto + $this->aumento_desperdicio_columnas * $this->n_columnas;
         $this->cantidad_anillo = $this->anillos * (0.45 * 4);
         $this->cantidad_canal_agua = $this->largoVigaPrincipal;

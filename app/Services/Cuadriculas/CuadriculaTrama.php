@@ -57,10 +57,11 @@ class CuadriculaTrama extends CuadriculaBase
     public function __construct(array $data)
     {
         parent::__construct($data);
-        $this->medidaACuadricula = $data['medidaA'];
-        $this->medidaBCuadricula = $data['medidaB'];
+
+        $this->medidaACuadricula = $data['medidaACuadricula'];
+        $this->medidaBCuadricula = $data['medidaBCuadricula'];
         $this->distanciaPalillajeCuadricula = $data['distanciaPalillaje'];
-        $this->altoCuadricula = $data['alto'];
+        $this->altoCuadricula = $data['altoCuadricula'];
     }
 
     public function calcular(): array

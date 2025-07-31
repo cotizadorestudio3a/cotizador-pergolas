@@ -174,7 +174,7 @@ class CorintiaRHTejaAsfaltica extends PergolaBase
         $mayor = max($this->medidaA, $this->medidaB);
         $menor = min($this->medidaA, $this->medidaB);
 
-        $this->numeroVigas = ceil($mayor / 0.65) + 1;
+        $this->numeroVigas = ceil($mayor / 0.8) + 1;
         $this->largoVigas = $menor;
         $this->largoVigaPrincipal = $mayor;
         $this->area = $this->medidaA * $this->medidaB;
@@ -510,7 +510,7 @@ class CorintiaRHTejaAsfaltica extends PergolaBase
 
             // Agregar servicio de pérgola
             $servicios[] = [
-                'tipo' => 'Pergola de corintia RH - Teja Asfaltica ' . $variantName,
+                'tipo' => 'Pergola de corintia RH - Teja Asfaltica ',
                 'medidas' => [
                     'medidaA' => $inputs['medidaA'] ?? 0,
                     'medidaB' => $inputs['medidaB'] ?? 0,

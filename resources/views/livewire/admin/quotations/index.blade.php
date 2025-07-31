@@ -127,7 +127,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ $quotation->client->name }}</div>
-                                    <div class="text-sm text-gray-500">DNI: {{ number_format($quotation->client->dni, 0, '', '.') }}</div>
+                                    <div class="text-sm text-gray-500">DNI: {{ $quotation->client->dni }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ $quotation->user->name }}</div>
@@ -215,7 +215,7 @@
                         <h3 class="text-sm font-medium text-gray-700 mb-2">Información del Cliente</h3>
                         <div class="bg-gray-50 p-3 rounded">
                             <p class="text-sm"><strong>Nombre:</strong> {{ $selectedQuotation->client->name }}</p>
-                            <p class="text-sm"><strong>DNI:</strong> {{ number_format($selectedQuotation->client->dni, 0, '', '.') }}</p>
+                            <p class="text-sm"><strong>DNI:</strong> {{ $selectedQuotation->client->dni }}</p>
                             <p class="text-sm"><strong>Teléfono:</strong> {{ $selectedQuotation->client->phone }}</p>
                             <p class="text-sm"><strong>Provincia:</strong> {{ $selectedQuotation->client->province }}</p>
                         </div>
